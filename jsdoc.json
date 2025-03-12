@@ -1,0 +1,22 @@
+{
+    "source": {
+      "include": ["db", "srv"],
+      "includePattern": ".+\\.(ts|js)$",
+      "excludePattern": "(node_modules|dist)"
+    },
+    "opts": {
+      "destination": "./docs",
+      "recurse": true,
+      "readme": "./README.md"
+    },
+    "plugins": [
+      "node_modules/better-docs/typescript",
+      "node_modules/better-docs/category"
+    ],
+    "tags": {
+      "allowUnknownTags": true
+    },
+    "typescript": {
+      "moduleRoot": "./"
+    }
+  }
