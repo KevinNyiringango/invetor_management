@@ -1,4 +1,5 @@
 using InventoryService as service from '../../srv/inventory-service';
+
 annotate service.Product with @(
     UI.FieldGroup #GeneratedGroup : {
         $Type : 'UI.FieldGroupType',
@@ -75,5 +76,16 @@ annotate service.Product with @(
             Value : MinimumStockLevel,
         },
     ],
+    UI.HeaderInfo : {
+        TypeName : 'Product',
+        TypeNamePlural : 'Products',
+        Title : {
+            Value : Name,
+            $Type : 'UI.DataField',
+        },
+        Description : {
+            Value : Description,
+            $Type : 'UI.DataField',
+        },
+    }
 );
-

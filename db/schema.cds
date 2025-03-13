@@ -29,7 +29,6 @@ entity Order {
   Items : Composition of many OrderItem on Items.Order = $self;
   TotalAmount : Decimal(10,2); 
 }
-
 entity OrderItem {
   key ID : UUID;
   Order : Association to one Order @mandatory;

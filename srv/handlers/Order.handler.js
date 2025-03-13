@@ -67,6 +67,7 @@ module.exports = (srv) => {
 
     // Set the total amount for the order
     req.data.TotalAmount = totalAmount;
+    console.log(`TotalAmount calculated: ${totalAmount}`); // Debug statement
   });
 
   /**

@@ -25,13 +25,20 @@
     "watch-inventory_management": "cds watch --open inventory_management/webapp/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy Bookshop --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-order": "cds watch --open order/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-company": "cds watch --open company/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "requires": {
       "db": {
-        "kind": "hana"
+        "kind": "sqlite",
+        "model": "*"
       }
+    },
+    "odata": {
+      "version": "v4",
+      "format": "flat"
     },
     "hana": {
       "deploy-format": "hdbtable"
@@ -41,6 +48,8 @@
     }
   },
   "sapux": [
-    "app/inventory_management"
+    "app/inventory_management",
+    "app/order",
+    "app/company"
   ]
 }
