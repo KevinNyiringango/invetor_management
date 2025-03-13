@@ -1,5 +1,6 @@
 namespace inventory;
 
+@odata.draft.enabled
 entity Product {
   key ID : UUID;
   Name : String(100);
@@ -9,16 +10,18 @@ entity Product {
   MinimumStockLevel : Integer;
   Quantity : Integer @mandatory; // Stock quantity directly in Product
   LastUpdated : Date default $now; // Last updated date for stock
-  OrderItems : Composition of many OrderItem on OrderItems.Product = $self;
+  OrderItems : Association to OrderItem on OrderItems.Product = $self;
 }
 
+@odata.draft.enabled
 entity Company {
   key ID : UUID;
   Name : String(100) @mandatory;
   Address : String(255);
-  Orders : Composition of many Order on Orders.Company = $self;
+  Orders : Association to Order on Orders.Company = $self;
 }
 
+@odata.draft.enabled
 entity Order {
   key ID : UUID;
   OrderDate : DateTime default $now;
