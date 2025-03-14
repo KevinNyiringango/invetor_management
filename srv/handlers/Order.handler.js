@@ -1,3 +1,4 @@
+// filepath: c:\Users\KevinNyiringango\invetor_management\srv\handlers\Order.handler.js
 const cds = require('@sap/cds');
 
 /**
@@ -14,6 +15,10 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('CREATE', 'Order', async (req) => {
+    if (!req.user.is('User')) {
+      return req.reject(403, 'error.onlyUsersCreate');
+    }
+
     const { Company_ID, Items } = req.data;
 
     // Validate Company_ID
@@ -38,7 +43,7 @@ module.exports = (srv) => {
     // Process each item one by one
     for (const item of Items) {
       const { Product_ID, Quantity } = item;
-      
+
       if (!Product_ID) {
         return req.reject(400, 'error.missingProductID');
       }
@@ -52,9 +57,12 @@ module.exports = (srv) => {
         }
         productCache.set(Product_ID, product);
       }
-      
-      // Check if there is enough stock
-      if (product.Quantity < Quantity) {
+
+      // Validate Quantity
+      if (Quantity <= 0) {
+        return req.reject(400, 'error.invalidQuantity', ['Quantity must be greater than zero']);
+      }
+      if (Quantity > product.Quantity) {
         return req.reject(400, 'error.insufficientStock', [Product_ID]);
       }
 
@@ -77,17 +85,17 @@ module.exports = (srv) => {
    */
   srv.after('CREATE', 'Order', async (data) => {
     const orderId = data.ID;
-    
+
     // Fetch the OrderItems using the Order ID
     const items = await SELECT.from(OrderItem).where({ Order_ID: orderId });
-    
+
     if (!items || !items.length) {
       return; // Nothing to update
     }
-    
+
     for (const item of items) {
       const { Product_ID, Quantity } = item;
-      
+
       // Update stock
       await UPDATE(Product)
         .set('Quantity -=', Quantity)
@@ -101,6 +109,10 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('DELETE', 'Order', async (req) => {
+    if (!req.user.is('Admin')) {
+      return req.reject(403, 'error.onlyAdminsDelete');
+    }
+
     const { ID } = req.data;
     const order = await SELECT.one.from(Order).where({ ID });
     if (!order) {

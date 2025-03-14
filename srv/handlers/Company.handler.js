@@ -14,6 +14,10 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('CREATE', 'Company', async (req) => {
+    if (!req.user.is('Admin')) {
+      return req.reject(403, 'error.onlyAdminsCreate');
+    }
+
     const { Name } = req.data;
     if (!Name) {
       return req.reject(400, 'error.missingRequiredFields');
@@ -26,6 +30,10 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('UPDATE', 'Company', async (req) => {
+    if (!req.user.is('Admin')) {
+      return req.reject(403, 'error.onlyAdminsUpdate');
+    }
+
     const { ID } = req.data;
     const existingCompany = await SELECT.from(Company).where({ ID });
 
@@ -53,6 +61,10 @@ module.exports = (srv) => {
    * @returns {Promise<string>}
    */
   srv.on('DELETE', 'Company', async (req) => {
+    if (!req.user.is('Admin')) {
+      return req.reject(403, 'error.onlyAdminsDelete');
+    }
+
     const { ID } = req.data;
     const existingCompany = await SELECT.from(Company).where({ ID });
 

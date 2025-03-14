@@ -54,6 +54,11 @@ annotate service.Order with @(
             $Type : 'UI.DataField',
             Label : 'Company',
             Value : Company_ID
+        },
+        {
+            $Type:'UI.DataField',
+            Label:'Total Amount',
+            Value:TotalAmount
         }
     ],
     
@@ -99,17 +104,8 @@ annotate service.Order with {
             CollectionPath : 'Company',
             Parameters : [
                 {
-                    $Type : 'Common.ValueListParameterInOut',
-                    LocalDataProperty : Company_ID,
-                    ValueListProperty : 'ID'
-                },
-                {
                     $Type : 'Common.ValueListParameterDisplayOnly',
                     ValueListProperty : 'Name'
-                },
-                {
-                    $Type : 'Common.ValueListParameterDisplayOnly',
-                    ValueListProperty : 'Address'
                 }
             ]
         }

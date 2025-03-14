@@ -14,15 +14,19 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('CREATE', 'Product', async (req) => {
+    if (!req.user.is('Admin')) {
+      return req.reject(403, 'error.onlyAdminsCreate');
+    }
+
     const { Name, UnitPrice, Quantity } = req.data;
     if (!Name) {
-      return req.reject(400,'error.missingRequiredFields');
+      return req.reject(400, 'error.missingRequiredFields');
     }
     if (typeof UnitPrice !== 'number' || UnitPrice <= 0) {
-      return req.reject(400,'error.invalidPrice');
+      return req.reject(400, 'error.invalidPrice');
     }
     if (typeof Quantity !== 'number' || Quantity < 0) {
-      return req.reject(400,'error.invalidStockQuantity');
+      return req.reject(400, 'error.invalidStockQuantity');
     }
   });
 
@@ -32,29 +36,33 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('UPDATE', 'Product', async (req) => {
+    if (!req.user.is('Admin')) {
+      return req.reject(403, 'error.onlyAdminsUpdate');
+    }
+
     const { ID } = req.data;
     const existingProduct = await SELECT.from(Product).where({ ID });
 
     if (!existingProduct.length) {
-      return req.reject(404,'error.productNotFound', [ID]);
+      return req.reject(404, 'error.productNotFound', [ID]);
     }
 
     const { Name, UnitPrice, Quantity } = req.data;
 
     if (UnitPrice !== undefined) {
       if (typeof UnitPrice !== 'number' || UnitPrice <= 0) {
-        return req.reject(400,'error.invalidPrice');
+        return req.reject(400, 'error.invalidPrice');
       }
     }
 
     if (Quantity !== undefined) {
       if (typeof Quantity !== 'number' || Quantity < 0) {
-        return req.reject(400,'error.invalidStockQuantity');
+        return req.reject(400, 'error.invalidStockQuantity');
       }
     }
 
     if (Name !== undefined && !Name.trim()) {
-      return req.reject(400,'error.emptyProductName');
+      return req.reject(400, 'error.emptyProductName');
     }
 
     await UPDATE(Product)
@@ -75,14 +83,18 @@ module.exports = (srv) => {
    * @returns {Promise<string>}
    */
   srv.on('DELETE', 'Product', async (req) => {
+    if (!req.user.is('Admin')) {
+      return req.reject(403, 'error.onlyAdminsDelete');
+    }
+
     const { ID } = req.data;
     const existingProduct = await SELECT.from(Product).where({ ID });
 
     if (!existingProduct.length) {
-      return req.reject(404,'error.productNotFound', [ID]);
+      return req.reject(404, 'error.productNotFound', [ID]);
     }
 
     await DELETE.from(Product).where({ ID });
-    return('error.productDeleted');
+    return 'error.productDeleted';
   });
 };
