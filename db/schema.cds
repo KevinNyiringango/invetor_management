@@ -8,8 +8,8 @@ entity Product {
   Category : String(100);
   UnitPrice : Decimal(10,2) @mandatory;
   MinimumStockLevel : Integer;
-  Quantity : Integer @mandatory; // Stock quantity directly in Product
-  LastUpdated : Date default $now; // Last updated date for stock
+  Quantity : Integer @mandatory; 
+  LastUpdated : Date default $now;
   OrderItems : Association to OrderItem on OrderItems.Product = $self;
 }
 

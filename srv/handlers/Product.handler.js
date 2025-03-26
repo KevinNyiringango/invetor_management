@@ -14,6 +14,7 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('CREATE', 'Product', async (req) => {
+    console.log("this is the role that is making the request",req.user)
     if (!req.user.is('Admin')) {
       return req.reject(403, 'error.onlyAdminsCreate');
     }
@@ -36,7 +37,9 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('UPDATE', 'Product', async (req) => {
+    
     if (!req.user.is('Admin')) {
+      
       return req.reject(403, 'error.onlyAdminsUpdate');
     }
 
