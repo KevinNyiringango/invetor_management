@@ -6,23 +6,25 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@cap-js/hana": "^1",
     "@sap/cds": "^8",
     "@sap/xssec": "^4",
     "express": "^4",
     "hdb": "^0.19.0",
-    "sqlite3": "^5.0.2",
-    "@cap-js/hana": "^1"
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.9.0",
     "@sap/cds-dk": "^8",
     "better-docs": "^2.7.3",
+    "jest": "^30.0.5",
     "jsdoc": "^4.0.4",
     "mbt": "^1.2.29",
     "rimraf": "^5.0.5"
   },
   "scripts": {
     "start": "cds-serve",
+    "test": "jest",
     "watch-inventory_management": "cds watch --open inventory_management/webapp/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy Bookshop --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",

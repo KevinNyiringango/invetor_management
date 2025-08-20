@@ -5,7 +5,7 @@ const cds = require('@sap/cds');
  * @module productsService
  * @param {Service} srv - The CDS service instance
  */
-module.exports = (srv) => {
+function productHandlers(srv) {
   const { Product } = srv.entities;
 
   /**
@@ -14,8 +14,8 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('CREATE', 'Product', async (req) => {
-    console.log("this is the role that is making the request",req.user)
     if (!req.user.is('Admin')) {
+      console.log("this is the user's role",req.user)
       return req.reject(403, 'error.onlyAdminsCreate');
     }
 
@@ -37,9 +37,7 @@ module.exports = (srv) => {
    * @returns {Promise<void>}
    */
   srv.before('UPDATE', 'Product', async (req) => {
-    
     if (!req.user.is('Admin')) {
-      
       return req.reject(403, 'error.onlyAdminsUpdate');
     }
 
@@ -100,4 +98,7 @@ module.exports = (srv) => {
     await DELETE.from(Product).where({ ID });
     return 'error.productDeleted';
   });
-};
+}
+
+module.exports = productHandlers;
+module.exports.productHandlers = productHandlers;

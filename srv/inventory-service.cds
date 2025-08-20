@@ -6,6 +6,21 @@ service InventoryService {
   entity OrderItem as projection on inventory.OrderItem;
   entity Company as projection on inventory.Company;
 
+  // Submit order action with comprehensive transaction handling
+  action submitOrder(companyId: UUID, items: array of {
+    productId: UUID;
+    quantity: Integer;
+  }) returns {
+    orderId: UUID;
+    totalAmount: Decimal;
+    status: String;
+    itemsProcessed: Integer;
+  };
+ action cancelOrder(orderId: UUID) returns {
+    orderId: UUID;
+    status: String;
+    message: String;
+  };
   annotate Product with @restrict : [
     { grant : [ '*' ], to : [ 'Admin' ] },
     { grant : [ 'READ'], to : [ 'User' ] }

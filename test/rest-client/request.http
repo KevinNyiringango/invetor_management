@@ -1,0 +1,106 @@
+### Create a Product (Admin: alice)
+POST http://localhost:4004/odata/v4/inventory/Product
+Content-Type: application/json
+Authorization: Basic alice:alice
+
+{
+  "Name": "New Product",
+  "UnitPrice": 100.0,
+  "Quantity": 50
+}
+
+### Get All Products (User: bob)
+GET http://localhost:4004/odata/v4/inventory/Product
+Accept: application/json
+Authorization: Basic bob:bob
+
+### Get a Product by ID (User: bob)
+GET http://localhost:4004/odata/v4/inventory/Product(ID='product-id')
+Accept: application/json
+Authorization: Basic bob:bob
+
+### Update a Product (Admin: alice)
+PATCH http://localhost:4004/odata/v4/inventory/Product(ID='product-id')
+Content-Type: application/json
+Authorization: Basic alice:alice
+
+{
+  "UnitPrice": 120.0,
+  "Quantity": 60
+}
+
+### Delete a Product (Admin: alice)
+DELETE http://localhost:4004/odata/v4/inventory/Product(ID='product-id')
+Authorization: Basic alice:alice
+
+### Create an Order (User: bob)
+POST http://localhost:4004/odata/v4/inventory/Order
+Content-Type: application/json
+Authorization: Basic bob:bob
+
+{
+  "Company_ID": "C001",
+  "Items": [
+    {
+      "Product_ID": "ef85fc02-01cb-4fce-a8b4-2576b8079656",
+      "Quantity": 5,
+      "UnitPrice": 200
+    }
+  ]
+}
+
+### Get All Orders (User: bob)
+GET http://localhost:4004/odata/v4/inventory/Order
+Accept: application/json
+Authorization: Basic bob:bob
+
+### Get Order by ID (User: bob)
+GET http://localhost:4004/odata/v4/inventory/Order(ID='order-id')
+Accept: application/json
+Authorization: Basic bob:bob
+
+### Transaction handling request (valid)
+
+POST http://localhost:4004/odata/v4/inventory/submitOrder
+Content-Type: application/json
+Authorization: Basic bob:bob
+
+{
+  "companyId": "63ad9cab-1aa0-4c7f-9f7d-68efb9ddcc6f",
+  "items": [
+    {
+      "productId": "559ad5cc-f136-4738-a64e-d95d77bdb9fe",
+      "quantity": 2
+    }
+  ]
+}
+
+### Transaction handling request (Invalid)
+
+
+POST http://localhost:4004/odata/v4/inventory/submitOrder
+Content-Type: application/json
+Authorization: Basic bob:bob
+
+{
+  "companyId": "63ad9cab-1aa0-4c7f-9f7d-68efb9ddcc6f",
+  "items": [
+    {
+      "productId": "559ad5cc-f136-4738-a64e-d95d77bdb9fe",
+      "quantity": 99999
+        }
+  ]
+}
+### Cancel Order Test for transaction handle
+
+POST http://localhost:4004/odata/v4/inventory/cancelOrder
+Content-Type: application/json
+Authorization: Basic alice:admin
+
+{
+  "orderId": "aa49f1b4-1c72-42da-894b-fa3b37642a89"
+}
+
+### Verify Product Stock After Cancellation
+GET http://localhost:4004/odata/v4/inventory/Product(ID='559ad5cc-f136-4738-a64e-d95d77bdb9fe')
+Authorization: Basic alice:admin

@@ -1,6 +1,6 @@
 namespace inventory;
 
-@odata.draft.enabled
+// @odata.draft.enabled
 entity Product {
   key ID : UUID;
   Name : String(100);
@@ -13,7 +13,7 @@ entity Product {
   OrderItems : Association to OrderItem on OrderItems.Product = $self;
 }
 
-@odata.draft.enabled
+// @odata.draft.enabled
 entity Company {
   key ID : UUID;
   Name : String(100) @mandatory;
@@ -21,7 +21,7 @@ entity Company {
   Orders : Association to Order on Orders.Company = $self;
 }
 
-@odata.draft.enabled
+// @odata.draft.enabled
 entity Order {
   key ID : UUID;
   OrderDate : DateTime default $now;
