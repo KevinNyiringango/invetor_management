@@ -70,7 +70,7 @@ Authorization: Basic bob:bob
   "items": [
     {
       "productId": "559ad5cc-f136-4738-a64e-d95d77bdb9fe",
-      "quantity": 2
+      "quantity": 5
     }
   ]
 }
@@ -98,7 +98,7 @@ Content-Type: application/json
 Authorization: Basic alice:admin
 
 {
-  "orderId": "aa49f1b4-1c72-42da-894b-fa3b37642a89"
+  "orderId": "4c65969d-c74e-4e07-81e4-411b0cf9936d"
 }
 
 ### Verify Product Stock After Cancellation
