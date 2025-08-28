@@ -39,12 +39,11 @@ Content-Type: application/json
 Authorization: Basic bob:bob
 
 {
-  "Company_ID": "C001",
+  "Company_ID": "e171faa0-6641-42b2-8722-dec273f23318",
   "Items": [
     {
-      "Product_ID": "ef85fc02-01cb-4fce-a8b4-2576b8079656",
-      "Quantity": 5,
-      "UnitPrice": 200
+      "Product_ID": "b189e649-94a7-425c-9e5b-9723a3d84f1",
+      "Quantity": 5
     }
   ]
 }
@@ -66,10 +65,10 @@ Content-Type: application/json
 Authorization: Basic bob:bob
 
 {
-  "companyId": "63ad9cab-1aa0-4c7f-9f7d-68efb9ddcc6f",
+  "companyId": "9ded2154-c736-4ebb-8857-76867fa65ea1",
   "items": [
     {
-      "productId": "559ad5cc-f136-4738-a64e-d95d77bdb9fe",
+      "productId": "0fcc608f-d121-4a30-ac36-bab10cd348bf",
       "quantity": 5
     }
   ]
@@ -104,3 +103,12 @@ Authorization: Basic alice:admin
 ### Verify Product Stock After Cancellation
 GET http://localhost:4004/odata/v4/inventory/Product(ID='559ad5cc-f136-4738-a64e-d95d77bdb9fe')
 Authorization: Basic alice:admin
+### Create a Company (Admin: alice)
+POST http://localhost:4004/odata/v4/inventory/Company
+Content-Type: application/json
+Authorization: Basic alice:alice
+
+{
+  "Name": "MOYOTECH",
+  "Address": "123 Main Street"
+}

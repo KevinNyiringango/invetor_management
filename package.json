@@ -10,6 +10,7 @@
     "@cap-js/attachments": "^2.2.0",
     "@cap-js/change-tracking": "^1.0.8",
     "@cap-js/hana": "^1",
+    "@cap-js/notifications": "^0.2.5",
     "@sap/cds": "^8",
     "@sap/xssec": "^4",
     "express": "^4",

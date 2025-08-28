@@ -105,6 +105,19 @@ module.exports = (srv) => {
         );
       }
 
+      // 6. Send notification using correct plugin usage
+      try {
+        const alert = await cds.connect.to('notifications');
+        await alert.notify({
+          recipients: [req.user.id],
+          priority: "HIGH",
+          title: "Order Created Successfully",
+          description: `A new order (${order.ID}) has been created for company ${company.Name} with total amount ${totalAmount}.`
+        });
+      } catch (notifyError) {
+        console.warn('Notification failed:', notifyError.message);
+      }
+
       // Return success response
       return {
         orderId: order.ID,
@@ -193,6 +206,19 @@ module.exports = (srv) => {
         DELETE.from(Order).where({ ID: orderId })
       );
 
+      // 6. Send cancellation notification
+      try {
+        const alert = await cds.connect.to('notifications');
+        await alert.notify({
+          recipients: [req.user.id],
+          priority: "MEDIUM",
+          title: "Order Cancelled",
+          description: `Order ${orderId} has been cancelled and ${orderItems.length} items restored to inventory.`
+        });
+      } catch (notifyError) {
+        console.warn('Notification failed:', notifyError.message);
+      }
+
       return {
         orderId: orderId,
         status: 'Cancelled',
@@ -223,9 +249,10 @@ module.exports = (srv) => {
   /**
    * After CREATE handler for Orders
    */
-  srv.after('CREATE', 'Order', async (data) => {
+  srv.after('CREATE', 'Order', async (data, req) => {
     const orderId = data.ID;
     const items = await SELECT.from(OrderItem).where({ Order_ID: orderId });
+    console.log("this is the user id", req.user.id);
 
     if (items?.length) {
       for (const item of items) {
@@ -233,6 +260,20 @@ module.exports = (srv) => {
           .set('Quantity -=', item.Quantity)
           .where({ ID: item.Product_ID });
       }
+    }
+
+    // Send notification for standard order creation
+    try {
+      const company = await SELECT.one.from(Company).where({ ID: data.Company_ID });
+      const alert = await cds.connect.to('notifications');
+      await alert.notify({
+        recipients: [req.user.id],
+        priority: "MEDIUM",
+        title: "Order Created",
+        description: `A new order (${orderId}) has been created for company ${company?.Name || data.Company_ID}.`
+      });
+    } catch (notifyError) {
+      console.warn('Notification failed:', notifyError.message);
     }
   });
 };
