@@ -1,27 +1,34 @@
 namespace inventory;
-
-// @odata.draft.enabled
+using { Attachments } from '@cap-js/attachments';
+@odata.draft.enabled
 entity Product {
   key ID : UUID;
+  @changelog : true
   Name : String(100);
+  @changelog : true
   Description : String(255);
   Category : String(100);
+  @changelog : true
   UnitPrice : Decimal(10,2) @mandatory;
+  @changelog : true
   MinimumStockLevel : Integer;
+  @changelog : true
   Quantity : Integer @mandatory; 
   LastUpdated : Date default $now;
   OrderItems : Association to OrderItem on OrderItems.Product = $self;
+  attachments: Composition of many Attachments;
 }
 
 // @odata.draft.enabled
+@changelog : true
 entity Company {
   key ID : UUID;
   Name : String(100) @mandatory;
   Address : String(255);
   Orders : Association to Order on Orders.Company = $self;
 }
-
 // @odata.draft.enabled
+@changelog : true
 entity Order {
   key ID : UUID;
   OrderDate : DateTime default $now;
@@ -29,6 +36,8 @@ entity Order {
   Items : Composition of many OrderItem on Items.Order = $self;
   TotalAmount : Decimal(10,2); 
 }
+
+@changelog : true
 entity OrderItem {
   key ID : UUID;
   Order : Association to one Order @mandatory;

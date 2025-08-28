@@ -4,9 +4,9 @@ Content-Type: application/json
 Authorization: Basic alice:alice
 
 {
-  "Name": "New Product",
-  "UnitPrice": 100.0,
-  "Quantity": 50
+  "Name": "Milk",
+  "UnitPrice": 100000.0,
+  "Quantity": 40
 }
 
 ### Get All Products (User: bob)

@@ -7,12 +7,15 @@
   "private": true,
   "dependencies": {
     "@cap-js-community/odata-v2-adapter": "^1.15.3",
+    "@cap-js/attachments": "^2.2.0",
+    "@cap-js/change-tracking": "^1.0.8",
     "@cap-js/hana": "^1",
     "@sap/cds": "^8",
     "@sap/xssec": "^4",
     "express": "^4",
     "hdb": "^0.19.0",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.2",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.9.0",
@@ -31,7 +34,8 @@
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
     "watch-order": "cds watch --open order/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-company": "cds watch --open company/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-company": "cds watch --open company/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-enventory": "cds watch --open enventory/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "requires": {
@@ -55,6 +59,12 @@
         }
       }
     },
+    "log": {
+      "levels": {
+        "change-tracking": "info",
+        "cds": "info"
+      }
+    },
     "odata": {
       "version": "v4",
       "format": "flat"
@@ -69,6 +79,7 @@
   "sapux": [
     "app/inventory_management",
     "app/order",
-    "app/company"
+    "app/company",
+    "app/enventory"
   ]
 }

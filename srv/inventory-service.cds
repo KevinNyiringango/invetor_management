@@ -5,8 +5,7 @@ service InventoryService {
   entity Order as projection on inventory.Order;
   entity OrderItem as projection on inventory.OrderItem;
   entity Company as projection on inventory.Company;
-
-  // Submit order action with comprehensive transaction handling
+  // entity ChangeLog as projection on inventory.sap_changelog_ChangeLog;  
   action submitOrder(companyId: UUID, items: array of {
     productId: UUID;
     quantity: Integer;
@@ -25,19 +24,27 @@ service InventoryService {
     { grant : [ '*' ], to : [ 'Admin' ] },
     { grant : [ 'READ'], to : [ 'User' ] }
   ];
+  // enable change-tracking for Product
+  annotate Product with @changelog : true;
 
   annotate Order with @restrict : [
     { grant : [ 'READ', 'DELETE', 'UPDATE' ], to : [ 'Admin' ] },
     { grant : [ 'READ', 'CREATE' ], to : [ 'User' ] }
   ];
+  // enable change-tracking for Order
+  annotate Order with @changelog : true;
 
   annotate OrderItem with @restrict : [
     { grant : [ 'READ', 'DELETE', 'UPDATE' ], to : [ 'Admin' ] },
     { grant : [ 'READ', 'CREATE' ], to : [ 'User' ] }
   ];
+  // enable change-tracking for OrderItem
+  annotate OrderItem with @changelog : true;
 
   annotate Company with @restrict : [
     { grant : [ '*' ], to : [ 'Admin' ] },
     { grant : [ 'READ'], to : [ 'User' ] }
   ];
+  // enable change-tracking for Company
+  annotate Company with @changelog : true;
 }
