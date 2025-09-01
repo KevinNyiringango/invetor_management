@@ -32,6 +32,29 @@ function productHandlers(srv) {
   });
 
   /**
+   * After CREATE handler for Products - Send notification
+   * @param {Object} data - The created product data
+   * @param {Request} req - The request object
+   * @returns {Promise<void>}
+   */
+  srv.after('CREATE', 'Product', async (data, req) => {
+    // console.log("Product created with ID:", data.ID);
+
+    // Send notification for product creation
+    try {
+      const alert = await cds.connect.to('notifications');
+      await alert.notify({
+        recipients: [req.user.id],
+        priority: "MEDIUM",
+        title: "Product Created Successfully",
+        description: `New product "${data.Name}" has been created with ID ${data.ID}. Stock quantity: ${data.Quantity}, Unit price: ${data.UnitPrice}.`
+      });
+    } catch (notifyError) {
+      console.warn('Product creation notification failed:', notifyError.message);
+    }
+  });
+
+  /**
    * Before UPDATE handler for Products
    * @param {Request} req - The request object
    * @returns {Promise<void>}
@@ -77,6 +100,8 @@ function productHandlers(srv) {
       })
       .where({ ID });
   });
+
+
 
   /**
    * DELETE handler for Products

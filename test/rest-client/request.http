@@ -4,9 +4,9 @@ Content-Type: application/json
 Authorization: Basic alice:alice
 
 {
-  "Name": "Milk",
-  "UnitPrice": 100000.0,
-  "Quantity": 40
+  "Name": "IPhone 13",
+  "UnitPrice": 1000.0,
+  "Quantity": 500
 }
 
 ### Get All Products (User: bob)
@@ -39,10 +39,10 @@ Content-Type: application/json
 Authorization: Basic bob:bob
 
 {
-  "Company_ID": "e171faa0-6641-42b2-8722-dec273f23318",
+  "Company_ID": "4736f281-41c9-42de-b2ae-7f7c2c2802dc",
   "Items": [
     {
-      "Product_ID": "b189e649-94a7-425c-9e5b-9723a3d84f1",
+      "Product_ID": "d00e74e2-0b96-44c5-aed6-748332aea2e6",
       "Quantity": 5
     }
   ]
@@ -65,7 +65,7 @@ Content-Type: application/json
 Authorization: Basic bob:bob
 
 {
-  "companyId": "9ded2154-c736-4ebb-8857-76867fa65ea1",
+  "companyId": "29650449-eefe-457f-a55d-7d3d33eb3673",
   "items": [
     {
       "productId": "0fcc608f-d121-4a30-ac36-bab10cd348bf",
@@ -112,3 +112,8 @@ Authorization: Basic alice:alice
   "Name": "MOYOTECH",
   "Address": "123 Main Street"
 }
+
+### Get All Notifications (User: bob)
+GET http://localhost:4004/odata/v4/notifications/Notifications
+Accept: application/json
+Authorization: Basic bob:bob

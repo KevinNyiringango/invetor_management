@@ -1,15 +1,15 @@
 namespace inventory;
 using { Attachments } from '@cap-js/attachments';
-@odata.draft.enabled
-@changelog : true
+// @odata.draft.enabled
+// @changelog : true
 entity Product {
   key ID : UUID;
-  Name : String(100);
-  Description : String(255);
+  Name : String(100) @changelog;
+  Description : String(255) @changelog;
   Category : String(100);
-  UnitPrice : Decimal(10,2) @mandatory;
+  UnitPrice : Decimal(10,2) @mandatory @changelog;
   MinimumStockLevel : Integer;
-  Quantity : Integer @mandatory; 
+  Quantity : Integer @mandatory @changelog;
   LastUpdated : Date default $now;
   OrderItems : Association to OrderItem on OrderItems.Product = $self;
   attachments: Composition of many Attachments;
@@ -30,6 +30,7 @@ entity Order {
   OrderDate : DateTime default $now;
   Company : Association to one Company @mandatory;
   Items : Composition of many OrderItem on Items.Order = $self;
+
   TotalAmount : Decimal(10,2); 
 }
 
