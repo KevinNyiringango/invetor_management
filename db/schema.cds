@@ -1,6 +1,6 @@
 namespace inventory;
 using { Attachments } from '@cap-js/attachments';
-// @odata.draft.enabled
+ @odata.draft.enabled
 // @changelog : true
 entity Product {
   key ID : UUID;
@@ -23,6 +23,7 @@ entity Company {
   Address : String(255);
   Orders : Association to Order on Orders.Company = $self;
 }
+
 // @odata.draft.enabled
 // @changelog : true
 entity Order {
@@ -30,7 +31,6 @@ entity Order {
   OrderDate : DateTime default $now;
   Company : Association to one Company @mandatory;
   Items : Composition of many OrderItem on Items.Order = $self;
-
   TotalAmount : Decimal(10,2); 
 }
 
@@ -40,4 +40,16 @@ entity OrderItem {
   Order : Association to one Order @mandatory;
   Product : Association to one Product @mandatory;
   Quantity : Integer @mandatory;
+}
+
+// New entity to store notifications
+entity Notification {
+  key ID : UUID;
+  recipient : String(100) @mandatory;
+  priority : String(20);
+  title : String(255) @mandatory;
+  description : String(1000);
+  createdAt : DateTime default $now;
+  isRead : Boolean default false;
+  method:String(20)
 }

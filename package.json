@@ -25,7 +25,8 @@
     "jest": "^30.0.5",
     "jsdoc": "^4.0.4",
     "mbt": "^1.2.29",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {
     "start": "cds-serve",
@@ -36,7 +37,8 @@
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
     "watch-order": "cds watch --open order/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-company": "cds watch --open company/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-enventory": "cds watch --open enventory/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-enventory": "cds watch --open enventory/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-notifications_panel": "cds watch --open notif.notificationspanel/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "cds": {
     "requires": {
@@ -81,6 +83,10 @@
     "app/inventory_management",
     "app/order",
     "app/company",
-    "app/enventory"
+    "app/enventory",
+    "app/notifications_panel"
+  ],
+  "workspaces": [
+    "app/*"
   ]
 }

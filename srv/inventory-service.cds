@@ -5,7 +5,11 @@ service InventoryService {
   entity Order as projection on inventory.Order;
   entity OrderItem as projection on inventory.OrderItem;
   entity Company as projection on inventory.Company;
-  // entity ChangeLog as projection on inventory.sap_changelog_ChangeLog;  
+  
+  // Expose notifications for users to view their own
+  entity Notification as projection on inventory.Notification;
+  
+  // existing actions
   action submitOrder(companyId: UUID, items: array of {
     productId: UUID;
     quantity: Integer;
@@ -15,36 +19,41 @@ service InventoryService {
     status: String;
     itemsProcessed: Integer;
   };
- action cancelOrder(orderId: UUID) returns {
+  
+  action cancelOrder(orderId: UUID) returns {
     orderId: UUID;
     status: String;
     message: String;
   };
+  
   annotate Product with @restrict : [
     { grant : [ '*' ], to : [ 'Admin' ] },
     { grant : [ 'READ'], to : [ 'User' ] }
   ];
-  // enable change-tracking for Product
   annotate Product with @changelog : true;
 
   annotate Order with @restrict : [
     { grant : [ 'READ', 'DELETE', 'UPDATE' ], to : [ 'Admin' ] },
     { grant : [ 'READ', 'CREATE' ], to : [ 'User' ] }
   ];
-  // enable change-tracking for Order
   annotate Order with @changelog : true;
 
   annotate OrderItem with @restrict : [
     { grant : [ 'READ', 'DELETE', 'UPDATE' ], to : [ 'Admin' ] },
     { grant : [ 'READ', 'CREATE' ], to : [ 'User' ] }
   ];
-  // enable change-tracking for OrderItem
   annotate OrderItem with @changelog : true;
 
   annotate Company with @restrict : [
     { grant : [ '*' ], to : [ 'Admin' ] },
     { grant : [ 'READ'], to : [ 'User' ] }
   ];
-  // enable change-tracking for Company
   annotate Company with @changelog : true;
+  
+  // Users can only read UPDATE notifications, Admins can see all
+  // Add WHERE restriction for users to only see UPDATE notifications
+  annotate Notification with @restrict : [
+    { grant : [ '*' ], to : [ 'Admin' ] },
+    { grant : [ 'READ', 'UPDATE'], to : [ 'User' ], where : 'method = UPDATE' }
+  ];
 }
