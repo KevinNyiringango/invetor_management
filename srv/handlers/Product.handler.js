@@ -133,7 +133,7 @@ function productHandlers(srv) {
       recipient: req.user.id,
       priority: "HIGH",
       title: "Product Updated",
-      description: `Product "${data.Name}" (ID: ${data.ID}) has been updated. New stock quantity: ${data.Quantity}, Unit price: ${data.UnitPrice}.`,
+      description: `Product "${data.Name}" has been updated. New stock quantity: ${data.Quantity}, Unit price: ${data.UnitPrice}.`,
       method: "UPDATE"
     };
 

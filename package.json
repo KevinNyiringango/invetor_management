@@ -38,7 +38,8 @@
     "watch-order": "cds watch --open order/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-company": "cds watch --open company/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-enventory": "cds watch --open enventory/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-notifications_panel": "cds watch --open notif.notificationspanel/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-notifications_panel": "cds watch --open notif.notificationspanel/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-product-list": "cds watch --open product-list/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "requires": {

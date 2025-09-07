@@ -36,6 +36,7 @@ service InventoryService {
     { grant : [ 'READ', 'DELETE', 'UPDATE' ], to : [ 'Admin' ] },
     { grant : [ 'READ', 'CREATE' ], to : [ 'User' ] }
   ];
+  
   annotate Order with @changelog : true;
 
   annotate OrderItem with @restrict : [
