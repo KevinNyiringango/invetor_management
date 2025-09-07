@@ -3,15 +3,12 @@
   xmlns:mvc="sap.ui.core.mvc"
   xmlns="sap.m">
   <Page title="Product List">
-    <headerContent>
-      <Text text="Login as 'alice' for admin access" class="sapUiSmallMargin"/>
-    </headerContent>
     <content>
       <Table id="productTable" 
              items="{path: '/Product'}">
         <headerToolbar>
           <Toolbar>
-            <Title text="Products ({path: '/Product', formatter: '.formatCount'})" level="H2"/>
+            <Title text="Products" level="H2"/>
             <ToolbarSpacer/>
             <Button text="Refresh" press="onRefresh" icon="sap-icon://refresh"/>
           </Toolbar>
@@ -23,7 +20,7 @@
           <Column width="12rem">
             <Text text="Name"/>
           </Column>
-          <Column width="8rem">
+          <Column width="12rem">
             <Text text="Description"/>
           </Column>
           <Column width="8rem">
