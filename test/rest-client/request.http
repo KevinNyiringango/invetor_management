@@ -4,8 +4,8 @@ Content-Type: application/json
 Authorization: Basic alice:alice
 
 {
-  "Name": "Phone 13",
-  "UnitPrice": 1000.0,
+  "Name": "PC Monitor",
+  "UnitPrice": 5000.0,
   "Quantity": 500
 }
 
