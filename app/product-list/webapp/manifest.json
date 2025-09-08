@@ -1,37 +1,28 @@
 {
+  "_version": "1.32.0",
   "sap.app": {
     "id": "productlist",
     "type": "application",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
     "title": "Product List",
-    "applicationVersion": { "version": "1.0.0" }
+    "description": "Product List Application"
   },
   "sap.ui": {
     "technology": "UI5",
-    "icons": { "icon": "" }
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
   },
   "sap.ui5": {
-    "rootView": {
-      "viewName": "productlist.view.List",
-      "type": "XML",
-      "async": true,
-      "id": "listView"
-    },
     "dependencies": {
-      "minUI5Version": "1.108.0",
+      "minUI5Version": "1.60.0",
       "libs": {
-        "sap.m": {},
-        "sap.ui.core": {}
-      }
-    },
-    "models": {
-      "": {
-        "type": "sap.ui.model.odata.v4.ODataModel",
-        "settings": {
-          "synchronizationMode": "None",
-          "operationMode": "Server",
-          "autoExpandSelect": true,
-          "serviceUrl": "/odata/v4/inventory/"
-        }
+        "sap.ui.core": {},
+        "sap.m": {}
       }
     }
   }

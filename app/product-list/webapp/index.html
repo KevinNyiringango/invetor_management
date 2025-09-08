@@ -1,19 +1,80 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product List</title>
+    
     <script
-      id="sap-ui-bootstrap"
-      src="https://ui5.sap.com/resources/sap-ui-core.js"
-      data-sap-ui-theme="sap_fiori_3"
-      data-sap-ui-resourceroots='{"productlist": "./"}'
-      data-sap-ui-onInit="module:productlist/index"
-      data-sap-ui-async="true"
-      data-sap-ui-compatVersion="edge"
-      data-sap-ui-frameOptions="trusted"
-      data-sap-ui-preload="async"
-    ></script>
-  </head>
-  <body class="sapUiBody" id="content"></body>
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-resourceroots='{
+            "productlist": "./"
+        }'
+        data-sap-ui-async="true"
+        data-sap-ui-preload=""
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-libs="sap.ui.core,sap.m">
+    </script>
+    
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Create the view directly without component
+            sap.ui.require([
+                "sap/ui/core/mvc/XMLView",
+                "sap/ui/model/json/JSONModel"
+            ], function(XMLView, JSONModel) {
+                
+                // Create and configure the model
+                var oModel = new JSONModel();
+                
+                // Load data from CAP service
+                fetch("/odata/v4/inventory/Product")
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error("HTTP " + response.status + " - " + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        console.log("Data loaded successfully:", data);
+                        oModel.setData({
+                            Product: data.value || []
+                        });
+                        console.log("Model updated with", data.value ? data.value.length : 0, "products");
+                    })
+                    .catch(function(error) {
+                        console.error("Error loading data:", error);
+                        oModel.setData({
+                            Product: []
+                        });
+                    });
+                
+                // Create the view
+                XMLView.create({
+                    id: "mainView",
+                    viewName: "productlist.view.Main"
+                }).then(function(oView) {
+                    // Set the model to the view
+                    oView.setModel(oModel);
+                    
+                    // Place the view
+                    oView.placeAt("content");
+                });
+            });
+        });
+    </script>
+    
+    <style>
+        html, body, #content {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="sapUiBody">
+    <div id="content"></div>
+</body>
 </html>

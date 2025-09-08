@@ -1,0 +1,68 @@
+<mvc:View
+    controllerName="productlist.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    
+    <Page title="Product Inventory" class="sapUiResponsiveContentPadding">
+        <content>
+            <Table id="productTable" 
+                   items="{/Product}"
+                   growing="true"
+                   growingThreshold="20"
+                   mode="SingleSelect"
+                   class="sapUiResponsiveMargin"
+                   
+                   width="100%"
+                   height="100%">
+                <headerToolbar>
+                    <Toolbar>
+                        <Title id="tableTitle" text="Products" level="H2"/>
+                        <ToolbarSpacer/>
+                        <Button text="Refresh" press="onRefresh" icon="sap-icon://refresh" type="Emphasized"/>
+                    </Toolbar>
+                </headerToolbar>
+                <columns>
+                    <Column width="12rem">
+                        <Text text="Name"/>
+                    </Column>
+                    <Column width="15rem">
+                        <Text text="Description"/>
+                    </Column>
+                    <Column width="10rem">
+                        <Text text="Category"/>
+                    </Column>
+                    <Column width="8rem">
+                        <Text text="Unit Price"/>
+                    </Column>
+                    <Column width="8rem">
+                        <Text text="Quantity"/>
+                    </Column>
+                    <Column width="10rem">
+                        <Text text="Min Stock"/>
+                    </Column>
+                    <Column width="10rem">
+                        <Text text="Last Updated"/>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem press="onItemPress" type="Active">
+                        <cells>
+                            <Text text="{Name}" maxLines="2"/>
+                            <Text text="{Description}" maxLines="2"/>
+                            <Text text="{Category}"/>
+                            <ObjectNumber 
+                                number="{UnitPrice}" 
+                                unit="RWF"
+                                state="Success"/>
+                            <ObjectNumber 
+                                number="{Quantity}" 
+                                state="Success"/>
+                            <Text text="{MinimumStockLevel}"/>
+                            <Text text="{LastUpdated}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

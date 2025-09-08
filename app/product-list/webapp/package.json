@@ -1,0 +1,38 @@
+{
+  "name": "product-list",
+  "version": "1.0.0",
+  "description": "Product List UI5 Freestyle Application",
+  "main": "webapp/index.html",
+  "scripts": {
+    "start": "ui5 serve --port 8080 --open webapp/index.html",
+    "start:dev": "ui5 serve --port 8080 --open webapp/index.html?sap-ui-xx-viewCache=false",
+    "build": "ui5 build --dest dist --clean-dest",
+    "build:opt": "ui5 build --dest dist --clean-dest --minify",
+    "lint": "eslint webapp",
+    "test": "npm run lint"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^3.11.0",
+    "@ui5/fs": "^3.0.5",
+    "@ui5/builder": "^3.5.0",
+    "@ui5/server": "^3.2.0",
+    "@ui5/logger": "^3.0.0",
+    "@ui5/project": "^3.9.0",
+    "@sap/ui5-builder-webide-extension": "^1.1.8",
+    "@sap/ux-ui5-tooling": "^1.14.4",
+    "ui5-task-flatten-library": "^3.0.5",
+    "ui5-middleware-csp": "^3.0.5",
+    "ui5-middleware-livereload": "^3.0.2",
+    "ui5-middleware-serveframework": "^3.0.0",
+    "ui5-middleware-simpleproxy": "^3.2.10",
+    "eslint": "^8.57.0"
+  },
+  "ui5": {
+    "dependencies": [
+      "ui5-middleware-csp",
+      "ui5-middleware-livereload", 
+      "ui5-middleware-serveframework",
+      "ui5-middleware-simpleproxy"
+    ]
+  }
+}

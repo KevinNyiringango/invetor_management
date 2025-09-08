@@ -21,6 +21,20 @@
   "devDependencies": {
     "@cap-js/cds-types": "^0.9.0",
     "@sap/cds-dk": "^8",
+    "@ui5/cli": "^3.11.0",
+    "@ui5/fs": "^3.0.5",
+    "@ui5/builder": "^3.5.0",
+    "@ui5/server": "^3.2.0",
+    "@ui5/logger": "^3.0.0",
+    "@ui5/project": "^3.9.0",
+    "@sap/ui5-builder-webide-extension": "^1.1.8",
+    "@sap/ux-ui5-tooling": "^1.14.4",
+    "@sap/ux-specification": "^1.120.17",
+    "ui5-task-flatten-library": "^3.0.5",
+    "ui5-middleware-csp": "^3.0.5",
+    "ui5-middleware-livereload": "^3.0.2",
+    "ui5-middleware-serveframework": "^3.0.0",
+    "ui5-middleware-simpleproxy": "^3.2.10",
     "better-docs": "^2.7.3",
     "jest": "^30.0.5",
     "jsdoc": "^4.0.4",
@@ -39,7 +53,13 @@
     "watch-company": "cds watch --open company/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-enventory": "cds watch --open enventory/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-notifications_panel": "cds watch --open notif.notificationspanel/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-product-list": "cds watch --open product-list/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-product-list": "cds watch --open product-list/webapp/index.html?sap-ui-xx-viewCache=false",
+    "ui5:build": "ui5 build --dest dist",
+    "ui5:serve": "ui5 serve --port 8080",
+    "ui5:build:all": "npm run ui5:build --prefix app/inventory_management && npm run ui5:build --prefix app/order && npm run ui5:build --prefix app/company && npm run ui5:build --prefix app/enventory && npm run ui5:build --prefix app/product-list",
+    "ui5:serve:all": "concurrently \"npm run ui5:serve --prefix app/inventory_management\" \"npm run ui5:serve --prefix app/order\" \"npm run ui5:serve --prefix app/company\" \"npm run ui5:serve --prefix app/enventory\" \"npm run ui5:serve --prefix app/product-list\"",
+    "install:all": "npm install && npm install --prefix app/inventory_management && npm install --prefix app/order && npm install --prefix app/company && npm install --prefix app/enventory && npm install --prefix app/product-list",
+    "build:all": "npm run build && npm run ui5:build:all"
   },
   "cds": {
     "requires": {
@@ -80,14 +100,26 @@
       "native_hana_associations": false
     }
   },
+  "ui5": {
+    "dependencies": [
+      "ui5-middleware-csp",
+      "ui5-middleware-livereload",
+      "ui5-middleware-serveframework",
+      "ui5-middleware-simpleproxy"
+    ]
+  },
   "sapux": [
     "app/inventory_management",
     "app/order",
     "app/company",
     "app/enventory",
-    "app/notifications_panel"
+    "app/notifications_panel",
+    "app/product-list"
   ],
   "workspaces": [
     "app/*"
-  ]
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
