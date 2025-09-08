@@ -1,6 +1,6 @@
 namespace inventory;
 using { Attachments } from '@cap-js/attachments';
- @odata.draft.enabled
+// @odata.draft.enabled
 // @changelog : true
 entity Product {
   key ID : UUID;

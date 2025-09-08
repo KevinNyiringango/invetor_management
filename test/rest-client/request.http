@@ -4,7 +4,7 @@ Content-Type: application/json
 Authorization: Basic alice:alice
 
 {
-  "Name": "Phone",
+  "Name": "Phone 13",
   "UnitPrice": 1000.0,
   "Quantity": 500
 }
