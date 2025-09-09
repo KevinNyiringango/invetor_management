@@ -5,12 +5,35 @@
     xmlns:smartTable="sap.ui.comp.smarttable"
     xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
     xmlns:core="sap.ui.core"
-    height="100%">
-    
-    <Page title="Product Inventory" enableScrolling="false" class="sapUiResponsiveContentPadding">
+    height="100%"
+>
+    <Page
+        title="Product Inventory"
+        enableScrolling="false"
+        class="sapUiResponsiveContentPadding"
+    >
         <content>
-            <VBox height="100%" class="sapUiNoMargin">
-                
+            <HBox justifyContent="End" alignItems="Center" class="sapUiSmallMarginBottom">
+                <Button
+                    id="notificationButton"
+                    icon="sap-icon://bell"
+                    type="Emphasized"
+                    press="onNotificationPress"
+                    tooltip="Notifications"
+                    text="3"
+                    class="sapUiTinyMarginEnd"
+                />
+                <Button
+                    text="Refresh"
+                    press="onRefresh"
+                    icon="sap-icon://refresh"
+                    type="Emphasized"
+                />
+            </HBox>
+            <VBox
+                height="100%"
+                class="sapUiNoMargin"
+            >
                 <!-- Smart Table with full height -->
                 <smartTable:SmartTable
                     id="smartTable"
@@ -23,21 +46,21 @@
                     enableAutoBinding="false"
                     class="sapUiNoMargin sapUiNoContentPadding"
                     height="100%"
-                    width="100%">
-                    
+                    width="100%"
+                >
                     <!-- Custom Toolbar -->
                     <smartTable:customToolbar>
                         <Toolbar height="3rem">
-                            <Title id="tableTitle" text="Products" level="H2" class="sapUiMediumMarginBegin"/>
-                            <ToolbarSpacer/>
-                            <Button 
-                                text="Refresh" 
-                                press="onRefresh" 
-                                icon="sap-icon://refresh" 
-                                type="Emphasized"/>
+                            <Title
+                                id="tableTitle"
+                                text="Products"
+                                level="H2"
+                                class="sapUiMediumMarginBegin"
+                            />
+                            <ToolbarSpacer />
                         </Toolbar>
                     </smartTable:customToolbar>
-                    
+
                     <!-- Table Definition -->
                     <Table
                         id="productTable"
@@ -47,102 +70,125 @@
                         growingThreshold="50"
                         width="100%"
                         fixedLayout="false"
-                        backgroundDesign="Solid">
-                        
+                        backgroundDesign="Solid"
+                    >
                         <columns>
-                            <Column 
-                                width="12rem" 
-                                minScreenWidth="Tablet" 
+                            <Column
+                                width="12rem"
+                                minScreenWidth="Tablet"
                                 demandPopin="true"
                                 popinDisplay="Inline"
-                                hAlign="Begin">
-                                <Text text="Name"/>
+                                hAlign="Begin"
+                            >
+                                <Text text="Name" />
                             </Column>
-                            
-                            <Column 
-                                width="15rem" 
-                                minScreenWidth="Desktop" 
+
+                            <Column
+                                width="15rem"
+                                minScreenWidth="Desktop"
                                 demandPopin="true"
                                 popinDisplay="Block"
-                                hAlign="Begin">
-                                <Text text="Description"/>
+                                hAlign="Begin"
+                            >
+                                <Text text="Description" />
                             </Column>
-                            
-                            <Column 
-                                width="10rem" 
-                                minScreenWidth="Tablet" 
+
+                            <Column
+                                width="10rem"
+                                minScreenWidth="Tablet"
                                 demandPopin="true"
                                 popinDisplay="Inline"
-                                hAlign="Center">
-                                <Text text="Category"/>
+                                hAlign="Center"
+                            >
+                                <Text text="Category" />
                             </Column>
-                            
-                            <Column 
-                                width="8rem" 
-                                minScreenWidth="Tablet" 
+
+                            <Column
+                                width="8rem"
+                                minScreenWidth="Tablet"
                                 demandPopin="false"
-                                hAlign="End">
-                                <Text text="Unit Price"/>
+                                hAlign="End"
+                            >
+                                <Text text="Unit Price" />
                             </Column>
-                            
-                            <Column 
-                                width="8rem" 
-                                minScreenWidth="Phone" 
+
+                            <Column
+                                width="8rem"
+                                minScreenWidth="Phone"
                                 demandPopin="false"
-                                hAlign="Center">
-                                <Text text="Quantity"/>
+                                hAlign="Center"
+                            >
+                                <Text text="Quantity" />
                             </Column>
-                            
-                            <Column 
-                                width="10rem" 
-                                minScreenWidth="Desktop" 
+
+                            <Column
+                                width="10rem"
+                                minScreenWidth="Desktop"
                                 demandPopin="true"
                                 popinDisplay="Inline"
-                                hAlign="Center">
-                                <Text text="Min Stock"/>
+                                hAlign="Center"
+                            >
+                                <Text text="Min Stock" />
                             </Column>
-                            
-                            <Column 
-                                width="10rem" 
-                                minScreenWidth="Desktop" 
+
+                            <Column
+                                width="10rem"
+                                minScreenWidth="Desktop"
                                 demandPopin="true"
                                 popinDisplay="Block"
-                                hAlign="Center">
-                                <Text text="Last Updated"/>
+                                hAlign="Center"
+                            >
+                                <Text text="Last Updated" />
                             </Column>
                         </columns>
-                        
+
                         <items>
-                            <ColumnListItem press="onItemPress" type="Active">
+                            <ColumnListItem
+                                press="onItemPress"
+                                type="Active"
+                            >
                                 <cells>
                                     <VBox>
-                                        <Text text="{Name}" maxLines="2" class="sapUiTinyMarginBottom"/>
-                                        <Label text="ID: {ID}" class="sapUiTinyText"/>
+                                        <Text
+                                            text="{Name}"
+                                            maxLines="2"
+                                            class="sapUiTinyMarginBottom"
+                                        />
+                                        <Label
+                                            text="ID: {ID}"
+                                            class="sapUiTinyText"
+                                        />
                                     </VBox>
-                                    
-                                    <Text text="{Description}" maxLines="3"/>
-                                    
-                                    <ObjectStatus 
-                                        text="{Category}" 
-                                        state="Information"/>
-                                    
-                                    <ObjectNumber 
-                                        number="{UnitPrice}" 
+
+                                    <Text
+                                        text="{Description}"
+                                        maxLines="3"
+                                    />
+
+                                    <ObjectStatus
+                                        text="{Category}"
+                                        state="Information"
+                                    />
+
+                                    <ObjectNumber
+                                        number="{UnitPrice}"
                                         unit="RWF"
-                                        state="Success"/>
-                                    
+                                        state="Success"
+                                    />
+
                                     <VBox>
-                                        <ObjectNumber 
-                                            number="{Quantity}" 
+                                        <ObjectNumber
+                                            number="{Quantity}"
                                             state="{
                                                 parts: ['Quantity', 'MinimumStockLevel'],
                                                 formatter: '.formatStockState'
-                                            }"/>
-                                        <ProgressIndicator 
+                                            }"
+                                        />
+                                        <ProgressIndicator
                                             percentValue="{
                                                 parts: ['Quantity', 'MinimumStockLevel'],
                                                 formatter: '.calculateStockPercentage'
-                                            }" 
+                                            }"
                                             state="{
                                                 parts: ['Quantity', 'MinimumStockLevel'],
                                                 formatter: '.formatStockState'
@@ -150,19 +196,24 @@
                                             showValue="false"
                                             width="100%"
                                             height="0.25rem"
-                                            class="sapUiTinyMarginTop"/>
+                                            class="sapUiTinyMarginTop"
+                                        />
                                     </VBox>
-                                    
-                                    <ObjectNumber 
-                                        number="{MinimumStockLevel}" 
-                                        state="None"/>
-                                    
+
+                                    <ObjectNumber
+                                        number="{MinimumStockLevel}"
+                                        state="None"
+                                    />
+
                                     <VBox>
-                                        <Text text="{LastUpdated}"/>
-                                        <Label text="{
+                                        <Text text="{LastUpdated}" />
+                                        <Label
+                                            text="{
                                             path: 'LastUpdated',
                                             formatter: '.formatTimeAgo'
-                                        }" class="sapUiTinyText"/>
+                                        }"
+                                            class="sapUiTinyText"
+                                        />
                                     </VBox>
                                 </cells>
                             </ColumnListItem>
@@ -172,4 +223,51 @@
             </VBox>
         </content>
     </Page>
+
+    <!-- Notification Popover -->
+    <Popover
+        id="notificationPopover"
+        title="Notifications"
+        placement="Bottom"
+        contentWidth="25rem"
+        contentHeight="20rem"
+    >
+        <content>
+            <VBox class="sapUiMediumMargin">
+                <List
+                    items="{/notifications}"
+                    noDataText="No notifications"
+                >
+                    <StandardListItem
+                        title="{title}"
+                        description="{description}"
+                        info="{timestamp}"
+                        infoState="{state}"
+                        type="Active"
+                        press="onNotificationItemPress"
+                    >
+                        <customData>
+                            <core:CustomData
+                                key="notificationId"
+                                value="{id}"
+                            />
+                        </customData>
+                    </StandardListItem>
+                </List>
+                <Toolbar>
+                    <ToolbarSpacer />
+                    <Button
+                        text="Mark All Read"
+                        press="onMarkAllRead"
+                        type="Emphasized"
+                    />
+                    <Button
+                        text="Clear All"
+                        press="onClearAllNotifications"
+                        type="Ghost"
+                    />
+                </Toolbar>
+            </VBox>
+        </content>
+    </Popover>
 </mvc:View>

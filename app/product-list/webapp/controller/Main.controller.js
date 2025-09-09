@@ -3,8 +3,9 @@ sap.ui.define([
     "sap/m/MessageToast",
     "sap/m/MessageBox",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
-], function (Controller, MessageToast, MessageBox, Filter, FilterOperator) {
+    "sap/ui/model/FilterOperator",
+    "sap/ui/model/json/JSONModel"
+], function (Controller, MessageToast, MessageBox, Filter, FilterOperator, JSONModel) {
     "use strict";
 
     return Controller.extend("productlist.controller.Main", {
@@ -12,6 +13,9 @@ sap.ui.define([
         onInit: function () {
             // Initialize the smart table
             this._initializeSmartTable();
+            
+            // Initialize notifications
+            this._initializeNotifications();
         },
 
         _initializeSmartTable: function () {
@@ -28,6 +32,148 @@ sap.ui.define([
                     oSmartTable.rebindTable();
                 });
             }
+        },
+
+        _initializeNotifications: function () {
+            // Hard-coded notifications data
+            var aNotifications = [
+                {
+                    id: "1",
+                    title: "Low Stock Alert",
+                    description: "Product 'Wireless Headphones' is running low on stock (5 units remaining)",
+                    timestamp: "2 hours ago",
+                    state: "Error",
+                    read: false
+                },
+                {
+                    id: "2",
+                    title: "Price Update",
+                    description: "Unit price for 'Gaming Mouse' has been updated to 25,000 RWF",
+                    timestamp: "5 hours ago",
+                    state: "Warning",
+                    read: false
+                },
+                {
+                    id: "3",
+                    title: "New Product Added",
+                    description: "Product 'USB-C Cable' has been successfully added to inventory",
+                    timestamp: "1 day ago",
+                    state: "Success",
+                    read: false
+                },
+                {
+                    id: "4",
+                    title: "Stock Replenishment",
+                    description: "Inventory for 'Office Chair' has been restocked (50 units added)",
+                    timestamp: "2 days ago",
+                    state: "Information",
+                    read: true
+                },
+                {
+                    id: "5",
+                    title: "System Maintenance",
+                    description: "Scheduled maintenance completed. All systems are operational",
+                    timestamp: "3 days ago",
+                    state: "Success",
+                    read: true
+                }
+            ];
+
+            // Create JSON model for notifications
+            var oNotificationModel = new JSONModel({
+                notifications: aNotifications
+            });
+            
+            this.getView().setModel(oNotificationModel, "notifications");
+            
+            // Update notification badge count
+            this._updateNotificationBadge();
+        },
+
+        _updateNotificationBadge: function () {
+            var oModel = this.getView().getModel("notifications");
+            var aNotifications = oModel.getProperty("/notifications");
+            var iUnreadCount = aNotifications.filter(function(notification) {
+                return !notification.read;
+            }).length;
+            
+            // Update the badge in the button's custom data
+            var oButton = this.byId("notificationButton");
+            if (oButton) {
+                var aCustomData = oButton.getCustomData();
+                if (aCustomData.length > 0) {
+                    aCustomData[0].setValue(iUnreadCount.toString());
+                }
+                
+                // Update tooltip to show count
+                var sTooltip = iUnreadCount > 0 ? 
+                    "Notifications (" + iUnreadCount + " unread)" : 
+                    "Notifications";
+                oButton.setTooltip(sTooltip);
+            }
+        },
+
+        onNotificationPress: function (oEvent) {
+            // Get the popover
+            var oPopover = this.byId("notificationPopover");
+            
+            if (!oPopover) {
+                // This shouldn't happen as popover is in the view
+                MessageToast.show("Notification popup not available");
+                return;
+            }
+            
+            // Set the notification model to the popover
+            oPopover.setModel(this.getView().getModel("notifications"));
+            
+            // Open the popover
+            oPopover.openBy(oEvent.getSource());
+        },
+
+        onNotificationItemPress: function (oEvent) {
+            var oContext = oEvent.getSource().getBindingContext();
+            var oNotification = oContext.getObject();
+            
+            // Mark as read
+            if (!oNotification.read) {
+                oNotification.read = true;
+                var oModel = this.getView().getModel("notifications");
+                oModel.refresh();
+                this._updateNotificationBadge();
+            }
+            
+            MessageToast.show("Notification: " + oNotification.title);
+            
+            // Close the popover
+            this.byId("notificationPopover").close();
+        },
+
+        onMarkAllRead: function () {
+            var oModel = this.getView().getModel("notifications");
+            var aNotifications = oModel.getProperty("/notifications");
+            
+            // Mark all notifications as read
+            aNotifications.forEach(function(notification) {
+                notification.read = true;
+            });
+            
+            oModel.refresh();
+            this._updateNotificationBadge();
+            MessageToast.show("All notifications marked as read");
+        },
+
+        onClearAllNotifications: function () {
+            MessageBox.confirm("Are you sure you want to clear all notifications?", {
+                onClose: function (oAction) {
+                    if (oAction === MessageBox.Action.OK) {
+                        var oModel = this.getView().getModel("notifications");
+                        oModel.setProperty("/notifications", []);
+                        this._updateNotificationBadge();
+                        MessageToast.show("All notifications cleared");
+                        this.byId("notificationPopover").close();
+                    }
+                }.bind(this)
+            });
         },
 
         onRefresh: function () {
