@@ -219,6 +219,45 @@ sap.ui.define([
         },
 
         // Formatter functions for enhanced display
+        formatPriorityIcon: function(sPriority) {
+            switch(sPriority) {
+                case "HIGH":
+                    return "sap-icon://alert";
+                case "MEDIUM":
+                    return "sap-icon://notification";
+                case "LOW":
+                    return "sap-icon://message-information";
+                default:
+                    return "sap-icon://notification";
+            }
+        },
+
+        formatPriorityClass: function(sPriority) {
+            switch(sPriority) {
+                case "HIGH":
+                    return "sapUiIcon sapUiIconColor6"; // Red
+                case "MEDIUM":
+                    return "sapUiIcon sapUiIconColor3"; // Orange
+                case "LOW":
+                    return "sapUiIcon sapUiIconColor8"; // Green
+                default:
+                    return "sapUiIcon";
+            }
+        },
+
+        formatPriorityState: function(sPriority) {
+            switch(sPriority) {
+                case "HIGH":
+                    return "Error";
+                case "MEDIUM":
+                    return "Warning";
+                case "LOW":
+                    return "Success";
+                default:
+                    return "None";
+            }
+        },
+
         formatStockState: function (iQuantity, iMinStock) {
             if (!iQuantity || !iMinStock) return "None";
             

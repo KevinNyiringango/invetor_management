@@ -15,17 +15,18 @@ Accept: application/json
 Authorization: Basic bob:bob
 
 ### Get a Product by ID (User: bob)
-GET http://localhost:4004/odata/v4/inventory/Product(ID='product-id')
+GET http://localhost:4004/odata/v4/inventory/Product(ID='0305c14a-867b-412a-83db-df98faab5896')
 Accept: application/json
 Authorization: Basic bob:bob
 
 ### Update a Product (Admin: alice)
-PATCH http://localhost:4004/odata/v4/inventory/Product(ID='product-id')
+PATCH http://localhost:4004/odata/v4/inventory/Product(ID='0305c14a-867b-412a-83db-df98faab5896')
 Content-Type: application/json
 Authorization: Basic alice:alice
 
 {
-  "UnitPrice": 120.0,
+  "Name": "34 inch Ryzen Monitor",
+  "UnitPrice": 201.0,
   "Quantity": 60
 }
 

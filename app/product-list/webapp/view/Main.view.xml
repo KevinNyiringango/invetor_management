@@ -243,6 +243,11 @@
                         description="{notifications>description}"
                         info="{path:'notifications>createdAt', formatter:'.formatTimeAgo'}"
                         type="Active"
+                        icon="{path: 'notifications>priority', formatter: '.formatPriorityIcon'}"
+                        iconDensityAware="false"
+                        iconInset="false"
+                        infoState="{path: 'notifications>priority', formatter: '.formatPriorityState'}"
+                        class="{path: 'notifications>priority', formatter: '.formatPriorityClass'}"
                         press="onNotificationItemPress"
                     />
                 </List>
