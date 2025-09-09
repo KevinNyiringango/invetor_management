@@ -20,48 +20,13 @@
     
     <script>
         sap.ui.getCore().attachInit(function() {
-            // Create the view directly without component
+            // Create the component instead of direct view creation
             sap.ui.require([
-                "sap/ui/core/mvc/XMLView",
-                "sap/ui/model/json/JSONModel"
-            ], function(XMLView, JSONModel) {
-                
-                // Create and configure the model
-                var oModel = new JSONModel();
-                
-                // Load data from CAP service
-                fetch("/odata/v4/inventory/Product")
-                    .then(function(response) {
-                        if (!response.ok) {
-                            throw new Error("HTTP " + response.status + " - " + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(function(data) {
-                        console.log("Data loaded successfully:", data);
-                        oModel.setData({
-                            Product: data.value || []
-                        });
-                        console.log("Model updated with", data.value ? data.value.length : 0, "products");
-                    })
-                    .catch(function(error) {
-                        console.error("Error loading data:", error);
-                        oModel.setData({
-                            Product: []
-                        });
-                    });
-                
-                // Create the view
-                XMLView.create({
-                    id: "mainView",
-                    viewName: "productlist.view.Main"
-                }).then(function(oView) {
-                    // Set the model to the view
-                    oView.setModel(oModel);
-                    
-                    // Place the view
-                    oView.placeAt("content");
-                });
+                "productlist/Component"
+            ], function(Component) {
+                // Create and initialize the component
+                var oComponent = new Component();
+                oComponent.init();
             });
         });
     </script>

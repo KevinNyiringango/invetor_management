@@ -14,8 +14,24 @@ sap.ui.define([
             // Initialize the smart table
             this._initializeSmartTable();
             
-            // Initialize notifications
-            this._initializeNotifications();
+            // The notifications are now loaded by the Component
+            // Just update the badge when the model is available
+            var oNotificationModel = this.getView().getModel("notifications");
+            if (oNotificationModel) {
+                oNotificationModel.attachPropertyChange(this._updateNotificationBadge.bind(this));
+                this._updateNotificationBadge();
+            } else {
+                // If model is not yet available, wait for it
+                this.getView().attachModelContextChange(this._onModelContextChange.bind(this));
+            }
+        },
+
+        _onModelContextChange: function() {
+            var oNotificationModel = this.getView().getModel("notifications");
+            if (oNotificationModel) {
+                oNotificationModel.attachPropertyChange(this._updateNotificationBadge.bind(this));
+                this._updateNotificationBadge();
+            }
         },
 
         _initializeSmartTable: function () {
@@ -34,65 +50,13 @@ sap.ui.define([
             }
         },
 
-        _initializeNotifications: function () {
-            // Hard-coded notifications data
-            var aNotifications = [
-                {
-                    id: "1",
-                    title: "Low Stock Alert",
-                    description: "Product 'Wireless Headphones' is running low on stock (5 units remaining)",
-                    timestamp: "2 hours ago",
-                    state: "Error",
-                    read: false
-                },
-                {
-                    id: "2",
-                    title: "Price Update",
-                    description: "Unit price for 'Gaming Mouse' has been updated to 25,000 RWF",
-                    timestamp: "5 hours ago",
-                    state: "Warning",
-                    read: false
-                },
-                {
-                    id: "3",
-                    title: "New Product Added",
-                    description: "Product 'USB-C Cable' has been successfully added to inventory",
-                    timestamp: "1 day ago",
-                    state: "Success",
-                    read: false
-                },
-                {
-                    id: "4",
-                    title: "Stock Replenishment",
-                    description: "Inventory for 'Office Chair' has been restocked (50 units added)",
-                    timestamp: "2 days ago",
-                    state: "Information",
-                    read: true
-                },
-                {
-                    id: "5",
-                    title: "System Maintenance",
-                    description: "Scheduled maintenance completed. All systems are operational",
-                    timestamp: "3 days ago",
-                    state: "Success",
-                    read: true
-                }
-            ];
-
-            // Create JSON model for notifications
-            var oNotificationModel = new JSONModel({
-                notifications: aNotifications
-            });
-            
-            this.getView().setModel(oNotificationModel, "notifications");
-            
-            // Update notification badge count
-            this._updateNotificationBadge();
-        },
-
         _updateNotificationBadge: function () {
             var oModel = this.getView().getModel("notifications");
+            if (!oModel) return;
+            
             var aNotifications = oModel.getProperty("/notifications");
+            if (!aNotifications) return;
+            
             var iUnreadCount = aNotifications.filter(function(notification) {
                 return !notification.read;
             }).length;
@@ -124,25 +88,39 @@ sap.ui.define([
             }
             
             // Set the notification model to the popover
-            oPopover.setModel(this.getView().getModel("notifications"));
+            oPopover.setModel(this.getView().getModel("notifications"), "notifications");
             
             // Open the popover
             oPopover.openBy(oEvent.getSource());
         },
 
         onNotificationItemPress: function (oEvent) {
-            var oContext = oEvent.getSource().getBindingContext();
+            var oContext = oEvent.getSource().getBindingContext("notifications");
             var oNotification = oContext.getObject();
             
             // Mark as read
-            if (!oNotification.read) {
-                oNotification.read = true;
+            if (!oNotification.isRead === false) {
+                oNotification.isRead = true;
                 var oModel = this.getView().getModel("notifications");
                 oModel.refresh();
                 this._updateNotificationBadge();
             }
+
+            var sFormattedMessage = [
+                "Title: " + oNotification.title,
+                "\n\nDescription:\n" + oNotification.description,
+                "\n\nPriority: " + oNotification.priority,
+                "\nCreated: " + this.formatTimeAgo(oNotification.createdAt)
+            ].join("");
             
-            MessageToast.show("Notification: " + oNotification.title);
+            // Show detailed notification in MessageBox with custom styling
+            MessageBox.show(sFormattedMessage, {
+                icon: MessageBox.Icon.INFORMATION,
+                title: "Notification Details",
+                styleClass: "sapUiSizeCompact",
+                actions: [MessageBox.Action.CLOSE],
+                htmlText: false
+            });
             
             // Close the popover
             this.byId("notificationPopover").close();
@@ -180,8 +158,15 @@ sap.ui.define([
             var oSmartTable = this.byId("smartTable");
             if (oSmartTable) {
                 oSmartTable.rebindTable();
-                MessageToast.show("Table refreshed successfully!");
             }
+            
+            // Also refresh data from the component
+            var oComponent = this.getOwnerComponent();
+            if (oComponent && oComponent.refreshData) {
+                oComponent.refreshData();
+            }
+            
+            MessageToast.show("Data refreshed successfully!");
         },
 
         onItemPress: function (oEvent) {

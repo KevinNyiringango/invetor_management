@@ -20,7 +20,7 @@
                     type="Emphasized"
                     press="onNotificationPress"
                     tooltip="Notifications"
-                    text="3"
+                    text=""
                     class="sapUiTinyMarginEnd"
                 />
                 <Button
@@ -235,24 +235,16 @@
         <content>
             <VBox class="sapUiMediumMargin">
                 <List
-                    items="{/notifications}"
-                    noDataText="No notifications"
+                    items="{notifications>/notifications}"
+                    noDataText="No notifications available"
                 >
                     <StandardListItem
-                        title="{title}"
-                        description="{description}"
-                        info="{timestamp}"
-                        infoState="{state}"
+                        title="{notifications>title}"
+                        description="{notifications>description}"
+                        info="{path:'notifications>createdAt', formatter:'.formatTimeAgo'}"
                         type="Active"
                         press="onNotificationItemPress"
-                    >
-                        <customData>
-                            <core:CustomData
-                                key="notificationId"
-                                value="{id}"
-                            />
-                        </customData>
-                    </StandardListItem>
+                    />
                 </List>
                 <Toolbar>
                     <ToolbarSpacer />
