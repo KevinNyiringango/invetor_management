@@ -14,6 +14,9 @@ sap.ui.define([
             // Set up the data model
             this.setupDataModel();
             
+            // Set up user role model
+            this.setupUserModel();
+            
             // Start notification polling
             this._startNotificationPolling();
             
@@ -46,6 +49,112 @@ sap.ui.define([
             
             // Load both products and notifications
             this.loadData();
+        },
+
+        setupUserModel: function() {
+            // Create user model with default values
+            var oUserModel = new JSONModel({
+                isAdmin: false,
+                role: "user",
+                username: "",
+                permissions: []
+            });
+            this.setModel(oUserModel, "user");
+            
+            // Load user role
+            this.loadUserRole();
+        },
+
+        loadUserRole: function() {
+            var that = this;
+            var oUserModel = this.getModel("user");
+            
+            console.log("Loading user role from CAP authentication...");
+            
+            return this._fetchUserFromCAP()
+                .then(function(userInfo) {
+                    var isAdmin = userInfo.roles && userInfo.roles.includes('Admin');
+                    
+                    // Update user model
+                    oUserModel.setData({
+                        isAdmin: isAdmin,
+                        role: isAdmin ? "Admin" : "User",
+                        userName: userInfo.user || "Unknown",
+                        permissions: isAdmin ? ["create", "read", "update", "delete"] : ["read"]
+                    });
+                    
+                    console.log("User role loaded:", isAdmin ? "Admin" : "User", "for user:", userInfo.user);
+                    return isAdmin;
+                })
+                .catch(function(error) {
+                    console.error("Error loading user role:", error);
+                    
+                    // Fallback: Check URL parameter for testing with your CAP users
+                    var urlParams = new URLSearchParams(window.location.search);
+                    var user = urlParams.get('user');
+                    var isAdmin = false;
+                    var userName = "Unknown";
+                    
+                    if (user === 'alice') {
+                        isAdmin = true;
+                        userName = 'alice';
+                    } else if (user === 'bob') {
+                        isAdmin = false;
+                        userName = 'bob';
+                    } else {
+                        // Default for testing
+                        isAdmin = window.location.hostname === 'localhost';
+                        userName = isAdmin ? 'alice' : 'bob';
+                    }
+                    
+                    // Update user model with fallback data
+                    oUserModel.setData({
+                        isAdmin: isAdmin,
+                        role: isAdmin ? "Admin" : "User",
+                        userName: userName,
+                        permissions: isAdmin ? ["create", "read", "update", "delete"] : ["read"]
+                    });
+                    
+                    console.log("Using fallback user role:", isAdmin ? "Admin" : "User", "for user:", userName);
+                    return Promise.resolve(isAdmin);
+                });
+        },
+
+        _fetchUserFromCAP: function() {
+            // Try to get user info from CAP service
+            return fetch("/user-info")
+                .then(function(response) {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error("User info not available");
+                })
+                .catch(function(error) {
+                    // Fallback for testing - simulate CAP user based on URL parameter
+                    var urlParams = new URLSearchParams(window.location.search);
+                    var user = urlParams.get('user');
+                    
+                    if (user === 'alice') {
+                        return Promise.resolve({ 
+                            user: 'alice', 
+                            roles: ['Admin'] 
+                        });
+                    } else if (user === 'bob') {
+                        return Promise.resolve({ 
+                            user: 'bob', 
+                            roles: ['User'] 
+                        });
+                    }
+                    
+                    // Default behavior for testing
+                    var defaultUser = window.location.hostname === 'localhost' ? 'alice' : 'bob';
+                    var defaultRoles = defaultUser === 'alice' ? ['Admin'] : ['User'];
+                    
+                    return Promise.resolve({ 
+                        user: defaultUser, 
+                        roles: defaultRoles 
+                    });
+                });
         },
 
         loadData: function() {
@@ -151,9 +260,10 @@ sap.ui.define([
                     id: "mainView",
                     viewName: "productlist.view.Main"
                 }).then(function(oView) {
-                    // Set both models to the view
+                    // Set all models to the view
                     oView.setModel(that.getModel());
                     oView.setModel(that.getModel("notifications"), "notifications");
+                    oView.setModel(that.getModel("user"), "user");
                     
                     // Place the view in a container
                     oView.placeAt("content");
@@ -174,6 +284,19 @@ sap.ui.define([
         // Method to get fresh notification data
         refreshNotificationData: function() {
             return this.loadNotificationData();
+        },
+
+        // Method to check user permissions
+        hasPermission: function(permission) {
+            var oUserModel = this.getModel("user");
+            var aPermissions = oUserModel.getProperty("/permissions") || [];
+            return aPermissions.includes(permission);
+        },
+
+        // Method to get current user info
+        getCurrentUser: function() {
+            var oUserModel = this.getModel("user");
+            return oUserModel.getData();
         }
     });
 });

@@ -14,6 +14,9 @@ sap.ui.define([
             // Initialize the smart table
             this._initializeSmartTable();
             
+            // Initialize user role management
+            this._initializeUserRole();
+            
             // Start notification polling
             this._startNotificationPolling();
             
@@ -25,6 +28,66 @@ sap.ui.define([
             } else {
                 this.getView().attachModelContextChange(this._onModelContextChange.bind(this));
             }
+        },
+
+        _initializeUserRole: function() {
+            // Create user role model
+            var oUserModel = new JSONModel({
+                isAdmin: false,
+                role: "bob" // Default role
+            });
+            this.getView().setModel(oUserModel, "user");
+            
+            // Load user role from backend or determine it
+            this._loadUserRole();
+        },
+
+        _loadUserRole: function() {
+            var oUserModel = this.getView().getModel("user");
+            var userName = this._getCurrentUserName();
+            var isAdmin = this._determineUserRole();
+            
+            oUserModel.setProperty("/isAdmin", isAdmin);
+            oUserModel.setProperty("/role", isAdmin ? "Admin" : "User");
+            oUserModel.setProperty("/userName", userName);
+            
+            console.log("User role loaded:", isAdmin ? "Admin" : "User", "for user:", userName);
+        },
+
+        _getCurrentUserName: function() {
+            // Get current user name from URL parameter (for testing) or other source
+            var urlParams = new URLSearchParams(window.location.search);
+            var user = urlParams.get('user');
+            
+            if (user === 'alice' || user === 'bob') {
+                return user;
+            }
+            
+            // Default based on hostname for testing
+            return window.location.hostname === 'localhost' ? 'alice' : 'bob';
+        },
+
+        _determineUserRole: function() {
+            // Replace this with your actual role determination logic
+            // This could be based on:
+            // 1. JWT token claims
+            // 2. Backend API call
+            // 3. User session data
+            // 4. URL parameters (for demo)
+            
+            // For demo purposes, check URL parameter or default to admin for testing
+            var urlParams = new URLSearchParams(window.location.search);
+            var role = urlParams.get('role');
+            
+            if (role === 'admin') {
+                return true;
+            } else if (role === 'user') {
+                return false;
+            }
+            
+            // Default behavior - you might want to change this
+            // For demo, we'll make it admin if localhost, otherwise user
+            return window.location.hostname === 'localhost';
         },
 
         _onModelContextChange: function() {
@@ -193,29 +256,54 @@ sap.ui.define([
         },
 
         onItemPress: function (oEvent) {
+            var oUserModel = this.getView().getModel("user");
             var oContext = oEvent.getSource().getBindingContext();
             var oSelectedItem = oContext.getObject();
             
-            MessageToast.show("Selected: " + oSelectedItem.Name);
+            if (!oUserModel.getProperty("/isAdmin")) {
+                MessageToast.show("View only: " + oSelectedItem.Name);
+                return;
+            }
             
-            // Navigate to detail view or open dialog
+            // Navigate to detail view or open dialog for admins
             this._openProductDetail(oSelectedItem);
         },
 
+        // Admin-only CRUD operations
         onAddProduct: function () {
+            var oUserModel = this.getView().getModel("user");
+            if (!oUserModel.getProperty("/isAdmin")) {
+                MessageToast.show("Access denied: Admin privileges required");
+                return;
+            }
+            
             MessageToast.show("Add Product functionality - implement as needed");
             // Implement add product dialog/navigation
+            this._openAddProductDialog();
         },
 
         onEditProduct: function (oEvent) {
+            var oUserModel = this.getView().getModel("user");
+            if (!oUserModel.getProperty("/isAdmin")) {
+                MessageToast.show("Access denied: Admin privileges required");
+                return;
+            }
+            
             var oContext = oEvent.getSource().getBindingContext();
             var oProduct = oContext.getObject();
             
             MessageToast.show("Edit: " + oProduct.Name);
             // Implement edit functionality
+            this._openEditProductDialog(oProduct);
         },
 
         onDeleteProduct: function (oEvent) {
+            var oUserModel = this.getView().getModel("user");
+            if (!oUserModel.getProperty("/isAdmin")) {
+                MessageToast.show("Access denied: Admin privileges required");
+                return;
+            }
+            
             var oContext = oEvent.getSource().getBindingContext();
             var oProduct = oContext.getObject();
             
@@ -232,13 +320,210 @@ sap.ui.define([
         },
 
         _deleteProduct: function (oProduct) {
-            // Implement delete logic here
-            MessageToast.show("Product deleted: " + oProduct.Name);
+            // Implement actual delete logic here
+            var that = this;
+            
+            // Simulate API call to delete product
+            // Replace with actual backend call
+            MessageToast.show("Deleting product: " + oProduct.Name);
+            
+            // After successful deletion, refresh the table
+            setTimeout(function() {
+                that.onRefresh();
+                MessageToast.show("Product deleted successfully: " + oProduct.Name);
+            }, 1000);
         },
 
         _openProductDetail: function (oProduct) {
             // Implement product detail view
             MessageToast.show("Opening details for: " + oProduct.Name);
+        },
+
+        _openAddProductDialog: function() {
+            if (!this._oProductDialog) {
+                this._oProductDialog = sap.ui.xmlfragment(
+                    "productlist.view.fragments.ProductDialog",
+                    this
+                );
+                this.getView().addDependent(this._oProductDialog);
+            }
+
+            // Initialize dialog model
+            var oDialogModel = new JSONModel({
+                title: "Create New Product",
+                isEdit: false,
+                product: {
+                    Name: "",
+                    Description: "",
+                    Category: "",
+                    UnitPrice: 0,
+                    Quantity: 0,
+                    MinimumStockLevel: 0
+                }
+            });
+            
+            this._oProductDialog.setModel(oDialogModel, "dialog");
+            this._oProductDialog.open();
+        },
+
+        _openEditProductDialog: function(oProduct) {
+            var oUserModel = this.getView().getModel("user");
+            if (!oUserModel.getProperty("/isAdmin")) {
+                MessageToast.show("Access denied: Admin privileges required");
+                return;
+            }
+
+            if (!this._oProductDialog) {
+                this._oProductDialog = sap.ui.xmlfragment(
+                    "productlist.view.fragments.ProductDialog",
+                    this
+                );
+                this.getView().addDependent(this._oProductDialog);
+            }
+
+            // Initialize dialog model with existing product data
+            var oDialogModel = new JSONModel({
+                title: "Edit Product",
+                isEdit: true,
+                product: Object.assign({}, oProduct)
+            });
+            
+            this._oProductDialog.setModel(oDialogModel, "dialog");
+            this._oProductDialog.open();
+        },
+
+        onSaveProduct: function() {
+            var oUserModel = this.getView().getModel("user");
+            if (!oUserModel.getProperty("/isAdmin")) {
+                MessageToast.show("Access denied: Admin privileges required");
+                return;
+            }
+
+            var oDialog = this._oProductDialog;
+            var oDialogModel = oDialog.getModel("dialog");
+            var oProduct = oDialogModel.getProperty("/product");
+            var bIsEdit = oDialogModel.getProperty("/isEdit");
+            
+            if (!this._validateProductData(oProduct)) {
+                MessageToast.show("Please fill in all required fields");
+                return;
+            }
+
+            if (bIsEdit) {
+                this._updateProduct(oProduct);
+            } else {
+                this._createProduct(oProduct);
+            }
+        },
+
+        _validateProductData: function(oProduct) {
+            return oProduct.Name && 
+                   oProduct.UnitPrice > 0 && 
+                   oProduct.Quantity >= 0;
+        },
+
+        _createProduct: function(oProduct) {
+            var that = this;
+            
+            // Format the data according to API requirements
+            var oPayload = {
+                Name: oProduct.Name,
+                UnitPrice: parseFloat(oProduct.UnitPrice),
+                Quantity: parseInt(oProduct.Quantity),
+                Description: oProduct.Description || "",
+                Category: oProduct.Category || "",
+                MinimumStockLevel: parseInt(oProduct.MinimumStockLevel) || 0
+            };
+            
+            fetch("/odata/v4/inventory/Product", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Basic " + btoa("alice:alice")
+                },
+                body: JSON.stringify(oPayload)
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    return response.json().then(function(error) {
+                        throw new Error(error.error.message || "Unknown error occurred");
+                    });
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                MessageToast.show("Product created successfully");
+                that._oProductDialog.close();
+                that.onRefresh();
+            })
+            .catch(function(error) {
+                MessageBox.error("Error creating product: " + error.message);
+            });
+        },
+
+        _updateProduct: function(oProduct) {
+            var that = this;
+            
+            // Format the data according to API requirements
+            var oPayload = {
+                Name: oProduct.Name,
+                UnitPrice: parseFloat(oProduct.UnitPrice),
+                Quantity: parseInt(oProduct.Quantity),
+                Description: oProduct.Description || "",
+                Category: oProduct.Category || "",
+                MinimumStockLevel: parseInt(oProduct.MinimumStockLevel) || 0
+            };
+            
+            fetch("/odata/v4/inventory/Product(ID='" + oProduct.ID + "')", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Basic " + btoa("alice:alice")
+                },
+                body: JSON.stringify(oPayload)
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    return response.json().then(function(error) {
+                        throw new Error(error.error.message || "Unknown error occurred");
+                    });
+                }
+                MessageToast.show("Product updated successfully");
+                that._oProductDialog.close();
+                that.onRefresh();
+            })
+            .catch(function(error) {
+                MessageBox.error("Error updating product: " + error.message);
+            });
+        },
+
+        onCancelDialog: function() {
+            if (this._oProductDialog) {
+                this._oProductDialog.close();
+            }
+        },
+
+        _deleteProduct: function(oProduct) {
+            var that = this;
+            
+            fetch("/odata/v4/inventory/Product(ID='" + oProduct.ID + "')", {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Basic " + btoa("alice:alice")
+                }
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    return response.json().then(function(error) {
+                        throw new Error(error.error.message || "Unknown error occurred");
+                    });
+                }
+                MessageToast.show("Product deleted successfully");
+                that.onRefresh();
+            })
+            .catch(function(error) {
+                MessageBox.error("Error deleting product: " + error.message);
+            });
         },
 
         // Formatter functions for enhanced display

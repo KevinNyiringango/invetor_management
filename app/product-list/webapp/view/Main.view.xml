@@ -14,6 +14,17 @@
     >
         <content>
             <HBox justifyContent="End" alignItems="Center" class="sapUiSmallMarginBottom">
+                <!-- Admin Add Product Button -->
+                <Button
+                    id="addProductButton"
+                    text="Add Product"
+                    icon="sap-icon://add"
+                    type="Emphasized"
+                    press="onAddProduct"
+                    visible="{user>/isAdmin}"
+                    class="sapUiTinyMarginEnd"
+                />
+                
                 <Button
                     id="notificationButton"
                     icon="sap-icon://bell"
@@ -53,6 +64,12 @@
                                 class="sapUiMediumMarginBegin"
                             />
                             <ToolbarSpacer />
+                            <!-- Role and user indicator -->
+                            <Label
+                                text="User: {user>/userName} ({user>/role})"
+                                class="sapUiTinyMarginEnd"
+                                design="Bold"
+                            />
                         </Toolbar>
                     </smartTable:customToolbar>
 
@@ -135,6 +152,17 @@
                             >
                                 <Text text="Last Updated" />
                             </Column>
+
+                            <!-- Actions Column - Only visible for admins -->
+                            <Column
+                                width="8rem"
+                                minScreenWidth="Desktop"
+                                demandPopin="false"
+                                hAlign="Center"
+                                visible="{user>/isAdmin}"
+                            >
+                                <Text text="Actions" />
+                            </Column>
                         </columns>
 
                         <items>
@@ -209,6 +237,27 @@
                                         }"
                                             class="sapUiTinyText"
                                         />
+                                    </VBox>
+
+                                    <!-- Action Buttons - Only visible for admins -->
+                                    <VBox>
+                                        <HBox visible="{= ${user>/isAdmin} ? true : false}">
+                                            <Button
+                                                icon="sap-icon://edit"
+                                                type="Transparent"
+                                                press="onEditProduct"
+                                                tooltip="Edit Product"
+                                                class="sapUiTinyMarginEnd"
+                                                visible="{user>/isAdmin}"
+                                            />
+                                            <Button
+                                                icon="sap-icon://delete"
+                                                type="Transparent"
+                                                press="onDeleteProduct"
+                                                tooltip="Delete Product"
+                                                visible="{user>/isAdmin}"
+                                            />
+                                        </HBox>
                                     </VBox>
                                 </cells>
                             </ColumnListItem>
