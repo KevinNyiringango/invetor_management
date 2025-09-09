@@ -4,9 +4,9 @@ Content-Type: application/json
 Authorization: Basic alice:alice
 
 {
-  "Name": "PC Monitor",
-  "UnitPrice": 5000.0,
-  "Quantity": 500
+  "Name": "Microchip Monitor",
+  "UnitPrice": 150.0,
+  "Quantity": 40
 }
 
 ### Get All Products (User: bob)

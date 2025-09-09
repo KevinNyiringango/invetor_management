@@ -14,14 +14,15 @@ sap.ui.define([
             // Initialize the smart table
             this._initializeSmartTable();
             
-            // The notifications are now loaded by the Component
-            // Just update the badge when the model is available
+            // Start notification polling
+            this._startNotificationPolling();
+            
+            // Initial notification setup
             var oNotificationModel = this.getView().getModel("notifications");
             if (oNotificationModel) {
                 oNotificationModel.attachPropertyChange(this._updateNotificationBadge.bind(this));
                 this._updateNotificationBadge();
             } else {
-                // If model is not yet available, wait for it
                 this.getView().attachModelContextChange(this._onModelContextChange.bind(this));
             }
         },
@@ -31,6 +32,29 @@ sap.ui.define([
             if (oNotificationModel) {
                 oNotificationModel.attachPropertyChange(this._updateNotificationBadge.bind(this));
                 this._updateNotificationBadge();
+            }
+        },
+
+        _startNotificationPolling: function() {
+            // Poll every 30 seconds
+            this._pollInterval = setInterval(function() {
+                this._refreshNotifications();
+            }.bind(this), 30000); // 30 seconds
+        },
+
+        _refreshNotifications: function() {
+            var oComponent = this.getOwnerComponent();
+            if (oComponent && oComponent.loadNotificationData) {
+                oComponent.loadNotificationData().then(function() {
+                    this._updateNotificationBadge();
+                }.bind(this));
+            }
+        },
+
+        onExit: function() {
+            // Clear polling interval when view is destroyed
+            if (this._pollInterval) {
+                clearInterval(this._pollInterval);
             }
         },
 
@@ -57,23 +81,22 @@ sap.ui.define([
             var aNotifications = oModel.getProperty("/notifications");
             if (!aNotifications) return;
             
-            var iUnreadCount = aNotifications.filter(function(notification) {
-                return !notification.read;
-            }).length;
+            // Count total notifications
+            var iTotalCount = aNotifications.length;
             
-            // Update the badge in the button's custom data
+            // Update the notification count on the button
             var oButton = this.byId("notificationButton");
             if (oButton) {
-                var aCustomData = oButton.getCustomData();
-                if (aCustomData.length > 0) {
-                    aCustomData[0].setValue(iUnreadCount.toString());
-                }
+                // Always show total count
+                oButton.setText(iTotalCount > 0 ? iTotalCount.toString() : "");
                 
                 // Update tooltip to show count
-                var sTooltip = iUnreadCount > 0 ? 
-                    "Notifications (" + iUnreadCount + " unread)" : 
-                    "Notifications";
+                var sTooltip = iTotalCount > 0 ? 
+                    "Notifications (" + iTotalCount + ")" : 
+                    "No Notifications";
                 oButton.setTooltip(sTooltip);
+                
+                console.log("Updated notification badge count:", iTotalCount);
             }
         },
 
@@ -220,41 +243,36 @@ sap.ui.define([
 
         // Formatter functions for enhanced display
         formatPriorityIcon: function(sPriority) {
-            switch(sPriority) {
-                case "HIGH":
-                    return "sap-icon://alert";
-                case "MEDIUM":
-                    return "sap-icon://notification";
-                case "LOW":
-                    return "sap-icon://message-information";
-                default:
-                    return "sap-icon://notification";
-            }
+            // Return object with both icon and color style
+            var oIconInfo = {
+                "HIGH": { icon: "sap-icon://error", color: "#BB0000" },       // Red X
+                "MEDIUM": { icon: "sap-icon://alert", color: "#E78C07" },    // Orange alert
+                "LOW": { icon: "sap-icon://success", color: "#2B7D2B" }      // Green check
+            };
+            
+            return oIconInfo[sPriority] ? oIconInfo[sPriority].icon : "sap-icon://message-information";
         },
 
-        formatPriorityClass: function(sPriority) {
-            switch(sPriority) {
-                case "HIGH":
-                    return "sapUiIcon sapUiIconColor6"; // Red
-                case "MEDIUM":
-                    return "sapUiIcon sapUiIconColor3"; // Orange
-                case "LOW":
-                    return "sapUiIcon sapUiIconColor8"; // Green
-                default:
-                    return "sapUiIcon";
-            }
+        formatPriorityStyle: function(sPriority) {
+            var oIconInfo = {
+                "HIGH": { icon: "sap-icon://error", color: "#BB0000" },
+                "MEDIUM": { icon: "sap-icon://alert", color: "#E78C07" },
+                "LOW": { icon: "sap-icon://success", color: "#2B7D2B" }
+            };
+            
+            return oIconInfo[sPriority] ? "color: " + oIconInfo[sPriority].color : "";
         },
 
         formatPriorityState: function(sPriority) {
             switch(sPriority) {
                 case "HIGH":
-                    return "Error";
+                    return "Error";      // Red
                 case "MEDIUM":
-                    return "Warning";
+                    return "Warning";    // Orange
                 case "LOW":
-                    return "Success";
+                    return "Success";    // Green
                 default:
-                    return "None";
+                    return "Information"; // Blue
             }
         },
 

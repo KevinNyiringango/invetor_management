@@ -14,8 +14,25 @@ sap.ui.define([
             // Set up the data model
             this.setupDataModel();
             
+            // Start notification polling
+            this._startNotificationPolling();
+            
             // Create and display the main view
             this.createMainView();
+        },
+
+        _startNotificationPolling: function() {
+            var that = this;
+            // Poll for new notifications every 5 seconds
+            this._notificationPollInterval = setInterval(function() {
+                that.loadNotificationData();
+            }, 5000);
+        },
+
+        exit: function() {
+            if (this._notificationPollInterval) {
+                clearInterval(this._notificationPollInterval);
+            }
         },
 
         setupDataModel: function() {
@@ -97,23 +114,29 @@ sap.ui.define([
                     console.log("Notification data loaded successfully:", data);
                     
                     // Set the data to the notification model
+                    var notifications = data.value || [];
                     oNotificationModel.setData({
-                        notifications: data.value || []
+                        notifications: notifications
                     });
                     
-                    console.log("Notification model updated with", data.value ? data.value.length : 0, "notifications");
+                    // Fire model change event
+                    oNotificationModel.firePropertyChange({
+                        reason: "Change",
+                        path: "/notifications",
+                        value: notifications
+                    });
+                    
+                    console.log("Notification model updated with", notifications.length, "notifications");
                 })
                 .catch(function(error) {
                     console.error("Error loading notification data:", error);
                     
-                    // Set empty data on error or fallback to hardcoded notifications
-                    
+                    // Set empty data on error
                     oNotificationModel.setData({
-                        notifications: aFallbackNotifications
+                        notifications: []
                     });
                     
-                    console.log("Using fallback notification data due to error:", error.message);
-                    // Don't re-throw here as we have fallback data
+                    console.log("Error loading notifications, using empty array:", error.message);
                 });
         },
 

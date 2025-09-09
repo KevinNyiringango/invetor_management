@@ -23,12 +23,7 @@
                     text=""
                     class="sapUiTinyMarginEnd"
                 />
-                <Button
-                    text="Refresh"
-                    press="onRefresh"
-                    icon="sap-icon://refresh"
-                    type="Emphasized"
-                />
+
             </HBox>
             <VBox
                 height="100%"
