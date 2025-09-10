@@ -221,7 +221,7 @@ sap.ui.define([
             var that = this;
             
             
-            return fetch("/odata/v4/inventory/Notification")
+            return fetch("/odata/v4/inventory/Notification?$filter=isRead eq false")
                 .then(function(response) {
                     if (!response.ok) {
                         throw new Error("HTTP " + response.status + " - " + response.statusText);

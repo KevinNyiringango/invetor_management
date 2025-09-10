@@ -58,3 +58,10 @@ service InventoryService {
     { grant : [ 'READ', 'UPDATE'], to : [ 'User' ], where : 'method = UPDATE' }
   ];
 }
+
+service NotificationService {
+    entity Notification as projection on inventory.Notification;
+    
+    action markAllAsRead();
+    action markAsRead(notificationId: String);
+}

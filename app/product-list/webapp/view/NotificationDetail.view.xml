@@ -1,0 +1,39 @@
+&lt;mvc:View
+    controllerName="productlist.controller.NotificationDetail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page
+        id="notificationDetailPage"
+        showNavButton="true"
+        navButtonPress=".onNavBack">
+        <headerContent>
+            <Button
+                icon="sap-icon://flag"
+                text="Mark as Read"
+                visible="{= !${notification>/isRead}}"
+                press=".onMarkAsRead"
+                type="Emphasized"/>
+        </headerContent>
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Title text="{notification>/title}" class="sapUiSmallMarginBottom"/>
+                <ObjectStatus
+                    text="{notification>/priority}"
+                    state="{= ${notification>/priority} === 'HIGH' ? 'Error' : ${notification>/priority} === 'MEDIUM' ? 'Warning' : 'Success'}"
+                    class="sapUiSmallMarginBottom"/>
+                <Text text="{notification>/description}" class="sapUiSmallMarginBottom"/>
+                <HBox>
+                    <Label text="Created: " class="sapUiTinyMarginEnd"/>
+                    <Text text="{
+                        path: 'notification>/createdAt',
+                        formatter: '.formatter.formatTimeAgo'
+                    }"/>
+                </HBox>
+                <ObjectStatus
+                    text="Read"
+                    state="Success"
+                    visible="{notification>/isRead}"/>
+            </VBox>
+        </content>
+    </Page>
+&lt;/mvc:View>

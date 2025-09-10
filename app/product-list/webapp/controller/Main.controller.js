@@ -50,8 +50,6 @@ sap.ui.define([
             oUserModel.setProperty("/isAdmin", isAdmin);
             oUserModel.setProperty("/role", isAdmin ? "Admin" : "User");
             oUserModel.setProperty("/userName", userName);
-            
-            console.log("User role loaded:", isAdmin ? "Admin" : "User", "for user:", userName);
         },
 
         _getCurrentUserName: function() {
@@ -158,9 +156,7 @@ sap.ui.define([
                     "Notifications (" + iTotalCount + ")" : 
                     "No Notifications";
                 oButton.setTooltip(sTooltip);
-                
-                console.log("Updated notification badge count:", iTotalCount);
-            }
+                    }
         },
 
         onNotificationPress: function (oEvent) {
@@ -183,47 +179,91 @@ sap.ui.define([
         onNotificationItemPress: function (oEvent) {
             var oContext = oEvent.getSource().getBindingContext("notifications");
             var oNotification = oContext.getObject();
-            
-            // Mark as read
-            if (!oNotification.isRead === false) {
-                oNotification.isRead = true;
-                var oModel = this.getView().getModel("notifications");
-                oModel.refresh();
-                this._updateNotificationBadge();
-            }
+            var that = this;
 
+            // Show notification details with mark as read button
             var sFormattedMessage = [
                 "Title: " + oNotification.title,
                 "\n\nDescription:\n" + oNotification.description,
                 "\n\nPriority: " + oNotification.priority,
-                "\nCreated: " + this.formatTimeAgo(oNotification.createdAt)
+                "\nCreated: " + that.formatTimeAgo(oNotification.createdAt)
             ].join("");
             
-            // Show detailed notification in MessageBox with custom styling
             MessageBox.show(sFormattedMessage, {
                 icon: MessageBox.Icon.INFORMATION,
                 title: "Notification Details",
                 styleClass: "sapUiSizeCompact",
-                actions: [MessageBox.Action.CLOSE],
-                htmlText: false
+                actions: oNotification.isRead ? 
+                    [MessageBox.Action.CLOSE] : 
+                    [MessageBox.Action.OK, MessageBox.Action.CLOSE],
+                emphasizedAction: MessageBox.Action.OK,
+                initialFocus: MessageBox.Action.OK,
+                buttonText: {
+                    [MessageBox.Action.OK]: "Mark as Read"
+                },
+                onClose: function(oAction) {
+                    if (oAction === MessageBox.Action.OK) {
+                        // Mark as read in backend
+                        fetch("/odata/v4/notification/markAsRead", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Basic " + btoa(that._getCurrentUserName() + ":" + that._getCurrentUserName())
+                            },
+                            body: JSON.stringify({
+                                notificationId: oNotification.ID
+                            })
+                        })
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error("Failed to mark notification as read");
+                            }
+                            return response.text().then(function(text) {
+                                return text ? JSON.parse(text) : {};
+                            });
+                        })
+                        .then(function(data) {
+                            // Refresh notifications to update UI
+                            that._refreshNotifications();
+                            MessageToast.show("Notification marked as read");
+                        })
+                        .catch(function(error) {
+                            MessageBox.error("Error: " + error.message);
+                        });
+                    }
+                }
             });
-            
+
             // Close the popover
             this.byId("notificationPopover").close();
         },
 
         onMarkAllRead: function () {
-            var oModel = this.getView().getModel("notifications");
-            var aNotifications = oModel.getProperty("/notifications");
+            var that = this;
             
-            // Mark all notifications as read
-            aNotifications.forEach(function(notification) {
-                notification.read = true;
+            fetch("/odata/v4/notification/markAllAsRead", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Basic " + btoa(this._getCurrentUserName() + ":" + this._getCurrentUserName())
+                }
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error("Failed to mark notifications as read");
+                }
+                return response.text().then(function(text) {
+                    return text ? JSON.parse(text) : {};
+                });
+            })
+            .then(function(data) {
+                // Refresh notifications after marking as read
+                that._refreshNotifications();
+                MessageToast.show(data.message || "All notifications marked as read");
+            })
+            .catch(function(error) {
+                MessageBox.error("Error: " + error.message);
             });
-            
-            oModel.refresh();
-            this._updateNotificationBadge();
-            MessageToast.show("All notifications marked as read");
         },
 
         onClearAllNotifications: function () {
@@ -449,7 +489,7 @@ sap.ui.define([
                         throw new Error(error.error.message || "Unknown error occurred");
                     });
                 }
-                return response.json();
+                return response.json;
             })
             .then(function(data) {
                 MessageToast.show("Product created successfully");
@@ -503,7 +543,7 @@ sap.ui.define([
             }
         },
 
-        _deleteProduct: function(oProduct) {
+        _deleteProduct: function (oProduct) {
             var that = this;
             
             fetch("/odata/v4/inventory/Product(ID='" + oProduct.ID + "')", {
