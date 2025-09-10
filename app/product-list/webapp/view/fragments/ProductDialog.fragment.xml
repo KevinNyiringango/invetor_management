@@ -63,7 +63,7 @@
         <beginButton>
             <Button
                 text="{= ${dialog>/isEdit} ? 'Update' : 'Create' }"
-                type="{= ${dialog>/isEdit} ? 'Warning' : 'Success' }"
+                type="{= ${dialog>/isEdit} ? 'Emphasized' : 'Success' }"
                 press="onSaveProduct" />
         </beginButton>
         <endButton>

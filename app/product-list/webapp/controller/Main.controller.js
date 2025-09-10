@@ -328,11 +328,16 @@ sap.ui.define([
                 return;
             }
             
-            var oContext = oEvent.getSource().getBindingContext();
-            var oProduct = oContext.getObject();
+            // Get the binding context from the selected item
+            var oButton = oEvent.getSource();
+            var oBindingContext = oButton.getBindingContext();
             
-            MessageToast.show("Edit: " + oProduct.Name);
-            // Implement edit functionality
+            if (!oBindingContext) {
+                MessageToast.show("Error: Could not get product details");
+                return;
+            }
+            
+            var oProduct = oBindingContext.getObject();
             this._openEditProductDialog(oProduct);
         },
 

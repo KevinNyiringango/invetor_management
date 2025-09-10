@@ -37,10 +37,11 @@
 
             </HBox>
             <VBox
-                height="100%"
-                class="sapUiNoMargin"
+                fitContainer="true"
+                height="calc(100vh - 8rem)"
+                class="sapUiNoContentPadding"
             >
-                <!-- Smart Table with full height -->
+                <!-- Smart Table with proper scrolling -->
                 <smartTable:SmartTable
                     id="smartTable"
                     tableType="ResponsiveTable"
@@ -51,7 +52,6 @@
                     showRowCount="false"
                     enableAutoBinding="false"
                     class="sapUiNoMargin sapUiNoContentPadding"
-                    height="100%"
                     width="100%"
                 >
                     <!-- Custom Toolbar -->
@@ -82,8 +82,9 @@
                                 path: 'Name'
                             }
                         }"
+                        sticky="ColumnHeaders"
                         growing="true"
-                        growingScrollToLoad="false"
+                        growingScrollToLoad="true"
                         growingThreshold="50"
                         width="100%"
                         fixedLayout="false"
@@ -250,7 +251,7 @@
                                             <Button
                                                 icon="sap-icon://edit"
                                                 type="Transparent"
-                                                press="onEditProduct"
+                                                press=".onEditProduct"
                                                 tooltip="Edit Product"
                                                 class="sapUiTinyMarginEnd"
                                                 visible="{user>/isAdmin}"
