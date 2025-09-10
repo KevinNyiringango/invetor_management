@@ -257,7 +257,7 @@
                                             />
                                             <Button
                                                 icon="sap-icon://delete"
-                                                type="Transparent"
+                                                type="Reject"
                                                 press="onDeleteProduct"
                                                 tooltip="Delete Product"
                                                 visible="{user>/isAdmin}"
@@ -279,13 +279,16 @@
         title="Notifications"
         placement="Bottom"
         contentWidth="25rem"
-        contentHeight="20rem"
+        contentHeight="auto"
+        class="sapUiNoContentPadding"
     >
         <content>
-            <VBox class="sapUiMediumMargin">
+            <VBox>
                 <List
                     items="{notifications>/notifications}"
                     noDataText="No notifications available"
+                    growing="true"
+                    growingScrollToLoad="true"
                 >
                     <StandardListItem
                         title="{notifications>title}"
@@ -295,8 +298,8 @@
                         icon="{path: 'notifications>priority', formatter: '.formatPriorityIcon'}"
                         iconDensityAware="false"
                         iconInset="false"
+                        highlight="{path: 'notifications>priority', formatter: '.formatPriorityState'}"
                         infoState="{path: 'notifications>priority', formatter: '.formatPriorityState'}"
-                        class="{path: 'notifications>priority', formatter: '.formatPriorityClass'}"
                         press="onNotificationItemPress"
                     />
                 </List>

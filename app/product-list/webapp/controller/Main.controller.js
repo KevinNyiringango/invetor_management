@@ -300,10 +300,9 @@ sap.ui.define([
             var oContext = oEvent.getSource().getBindingContext();
             var oSelectedItem = oContext.getObject();
             
-            if (!oUserModel.getProperty("/isAdmin")) {
-                MessageToast.show("View only: " + oSelectedItem.Name);
-                return;
-            }
+            // if (!oUserModel.getProperty("/isAdmin")) {
+            //     return;
+            // }
             
             // Navigate to detail view or open dialog for admins
             this._openProductDetail(oSelectedItem);
@@ -350,11 +349,16 @@ sap.ui.define([
             MessageBox.confirm(
                 "Are you sure you want to delete '" + oProduct.Name + "'?",
                 {
+                    icon: MessageBox.Icon.WARNING,
+                    title: "Delete Product",
+                    actions: [MessageBox.Action.DELETE, MessageBox.Action.CANCEL],
+                    emphasizedAction: MessageBox.Action.DELETE,
                     onClose: function (oAction) {
-                        if (oAction === MessageBox.Action.OK) {
+                        if (oAction === MessageBox.Action.DELETE) {
                             this._deleteProduct(oProduct);
                         }
-                    }.bind(this)
+                    }.bind(this),
+                    styleClass: "sapUiSizeCompact"
                 }
             );
         },
@@ -568,14 +572,17 @@ sap.ui.define([
 
         // Formatter functions for enhanced display
         formatPriorityIcon: function(sPriority) {
-            // Return object with both icon and color style
-            var oIconInfo = {
-                "HIGH": { icon: "sap-icon://error", color: "#BB0000" },       // Red X
-                "MEDIUM": { icon: "sap-icon://alert", color: "#E78C07" },    // Orange alert
-                "LOW": { icon: "sap-icon://success", color: "#2B7D2B" }      // Green check
+            // Match icons with priority states
+            switch(sPriority) {
+                case "HIGH":
+                    return "sap-icon://error";      // Red X
+                case "MEDIUM":
+                    return "sap-icon://alert";      // Orange alert
+                case "LOW":
+                    return "sap-icon://success";    // Green check
+                default:
+                    return "sap-icon://message-information"; // Blue info
             };
-            
-            return oIconInfo[sPriority] ? oIconInfo[sPriority].icon : "sap-icon://message-information";
         },
 
         formatPriorityStyle: function(sPriority) {
@@ -591,11 +598,11 @@ sap.ui.define([
         formatPriorityState: function(sPriority) {
             switch(sPriority) {
                 case "HIGH":
-                    return "Error";      // Red
+                    return "Information"; // Blue
                 case "MEDIUM":
-                    return "Warning";    // Orange
+                    return "Warning";     // Orange
                 case "LOW":
-                    return "Success";    // Green
+                    return "Success";     // Green
                 default:
                     return "Information"; // Blue
             }

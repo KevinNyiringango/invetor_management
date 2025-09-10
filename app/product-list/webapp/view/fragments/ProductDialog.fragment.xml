@@ -62,13 +62,14 @@
         </content>
         <beginButton>
             <Button
-                text="Save"
-                type="Emphasized"
+                text="{= ${dialog>/isEdit} ? 'Update' : 'Create' }"
+                type="{= ${dialog>/isEdit} ? 'Warning' : 'Success' }"
                 press="onSaveProduct" />
         </beginButton>
         <endButton>
             <Button
                 text="Cancel"
+                type="Transparent"
                 press="onCancelDialog" />
         </endButton>
     </Dialog>

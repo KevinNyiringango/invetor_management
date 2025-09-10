@@ -1,4 +1,4 @@
-&lt;mvc:View
+<mvc:View
     controllerName="productlist.controller.NotificationDetail"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
@@ -36,4 +36,4 @@
             </VBox>
         </content>
     </Page>
-&lt;/mvc:View>
+</mvc:View>
