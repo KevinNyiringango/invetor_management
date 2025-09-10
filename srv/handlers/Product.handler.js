@@ -8,6 +8,19 @@ const cds = require('@sap/cds');
 function productHandlers(srv) {
   const { Product, Notification } = srv.entities;
 
+  // Add READ handler to include user role
+  srv.on('READ', 'Product', async (req) => {
+    const userRole = req.user.is('Admin') ? 'Admin' : 'User';
+    const results = await SELECT.from(Product);
+    
+    // Add user role to response metadata
+    return {
+      "@odata.context": "$metadata#Product",
+      "userRole": userRole,
+      "value": results
+    };
+  });
+
   /**
    * Helper function to store notification in database
    * @param {string} recipient - The user ID
@@ -34,9 +47,14 @@ function productHandlers(srv) {
    * Before CREATE handler for Products
    */
   srv.before('CREATE', 'Product', async (req) => {
+    const userRole = req.user.is('Admin') ? 'Admin' : 'User';
     if (!req.user.is('Admin')) {
       console.log("this is the user's role", req.user);
-      return req.reject(403, 'error.onlyAdminsCreate');
+      return req.reject(403, { 
+        code: 'error.onlyAdminsCreate',
+        message: 'Only admins can create products',
+        role: userRole
+      });
     }
 
     const { Name, UnitPrice, Quantity } = req.data;
@@ -55,6 +73,9 @@ function productHandlers(srv) {
    * After CREATE handler for Products - Send notification and store in DB
    */
   srv.after('CREATE', 'Product', async (data, req) => {
+    const userRole = req.user.is('Admin') ? 'Admin' : 'User';
+    data.userRole = userRole; // Add user role to response data
+    
     const notificationData = {
       recipient: req.user.id,
       priority: "MEDIUM",
@@ -84,8 +105,13 @@ function productHandlers(srv) {
    * Before UPDATE handler for Products
    */
   srv.before('UPDATE', 'Product', async (req) => {
+    const userRole = req.user.is('Admin') ? 'Admin' : 'User';
     if (!req.user.is('Admin')) {
-      return req.reject(403, 'error.onlyAdminsUpdate');
+      return req.reject(403, {
+        code: 'error.onlyAdminsUpdate',
+        message: 'Only admins can update products',
+        role: userRole
+      });
     }
 
     const { ID } = req.data;
@@ -129,6 +155,9 @@ function productHandlers(srv) {
    * After UPDATE handler for Products - Send notification and store in DB
    */
   srv.after('UPDATE', 'Product', async (data, req) => {
+    const userRole = req.user.is('Admin') ? 'Admin' : 'User';
+    data.userRole = userRole; // Add user role to response data
+    
     const notificationData = {
       recipient: req.user.id,
       priority: "HIGH",
@@ -157,8 +186,13 @@ function productHandlers(srv) {
    * DELETE handler for Products
    */
   srv.on('DELETE', 'Product', async (req) => {
+    const userRole = req.user.is('Admin') ? 'Admin' : 'User';
     if (!req.user.is('Admin')) {
-      return req.reject(403, 'error.onlyAdminsDelete');
+      return req.reject(403, {
+        code: 'error.onlyAdminsDelete',
+        message: 'Only admins can delete products',
+        role: userRole
+      });
     }
 
     const { ID } = req.data;
@@ -172,6 +206,13 @@ function productHandlers(srv) {
     const productName = existingProduct[0].Name;
 
     await DELETE.from(Product).where({ ID });
+    
+    // Add user role to response
+    const response = {
+      success: true,
+      userRole: userRole,
+      message: `Product ${productName} deleted successfully`
+    };
 
     // Send delete notification
     const notificationData = {
@@ -197,7 +238,7 @@ function productHandlers(srv) {
       notificationData.method
     );
 
-    return 'error.productDeleted';
+    return response;
   });
 }
 

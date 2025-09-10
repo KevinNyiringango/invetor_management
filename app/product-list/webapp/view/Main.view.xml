@@ -76,7 +76,12 @@
                     <!-- Table Definition -->
                     <Table
                         id="productTable"
-                        items="{/Product}"
+                        items="{
+                            path: '/Product',
+                            sorter: {
+                                path: 'Name'
+                            }
+                        }"
                         growing="true"
                         growingScrollToLoad="false"
                         growingThreshold="50"

@@ -62,63 +62,63 @@ sap.ui.define([
             this.setModel(oUserModel, "user");
             
             // Load user role
-            this.loadUserRole();
+            // this.loadUserRole();
         },
 
-        loadUserRole: function() {
-            var that = this;
-            var oUserModel = this.getModel("user");
+        // loadUserRole: function() {
+        //     var that = this;
+        //     var oUserModel = this.getModel("user");
             
-            console.log("Loading user role from CAP authentication...");
+        //     console.log("Loading user role from CAP authentication...");
             
-            return this._fetchUserFromCAP()
-                .then(function(userInfo) {
-                    var isAdmin = userInfo.roles && userInfo.roles.includes('Admin');
+        //     return this._fetchUserFromCAP()
+        //         .then(function(userInfo) {
+        //             var isAdmin = userInfo.roles && userInfo.roles.includes('Admin');
                     
-                    // Update user model
-                    oUserModel.setData({
-                        isAdmin: isAdmin,
-                        role: isAdmin ? "Admin" : "User",
-                        userName: userInfo.user || "Unknown",
-                        permissions: isAdmin ? ["create", "read", "update", "delete"] : ["read"]
-                    });
+        //             // Update user model
+        //             oUserModel.setData({
+        //                 isAdmin: isAdmin,
+        //                 role: isAdmin ? "Admin" : "User",
+        //                 userName: userInfo.user || "Unknown",
+        //                 permissions: isAdmin ? ["create", "read", "update", "delete"] : ["read"]
+        //             });
                     
-                    console.log("User role loaded:", isAdmin ? "Admin" : "User", "for user:", userInfo.user);
-                    return isAdmin;
-                })
-                .catch(function(error) {
-                    console.error("Error loading user role:", error);
+        //             console.log("User role loaded:", isAdmin ? "Admin" : "User", "for user:", userInfo.user);
+        //             return isAdmin;
+        //         })
+        //         .catch(function(error) {
+        //             console.error("Error loading user role:", error);
                     
-                    // Fallback: Check URL parameter for testing with your CAP users
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var user = urlParams.get('user');
-                    var isAdmin = false;
-                    var userName = "Unknown";
+        //             // Fallback: Check URL parameter for testing with your CAP users
+        //             var urlParams = new URLSearchParams(window.location.search);
+        //             var user = urlParams.get('user');
+        //             var isAdmin = false;
+        //             var userName = "Unknown";
                     
-                    if (user === 'alice') {
-                        isAdmin = true;
-                        userName = 'alice';
-                    } else if (user === 'bob') {
-                        isAdmin = false;
-                        userName = 'bob';
-                    } else {
-                        // Default for testing
-                        isAdmin = window.location.hostname === 'localhost';
-                        userName = isAdmin ? 'alice' : 'bob';
-                    }
+        //             if (user === 'alice') {
+        //                 isAdmin = true;
+        //                 userName = 'alice';
+        //             } else if (user === 'bob') {
+        //                 isAdmin = false;
+        //                 userName = 'bob';
+        //             } else {
+        //                 // Default for testing
+        //                 isAdmin = window.location.hostname === 'localhost';
+        //                 userName = isAdmin ? 'alice' : 'bob';
+        //             }
                     
-                    // Update user model with fallback data
-                    oUserModel.setData({
-                        isAdmin: isAdmin,
-                        role: isAdmin ? "Admin" : "User",
-                        userName: userName,
-                        permissions: isAdmin ? ["create", "read", "update", "delete"] : ["read"]
-                    });
+        //             // Update user model with fallback data
+        //             oUserModel.setData({
+        //                 isAdmin: isAdmin,
+        //                 role: isAdmin ? "Admin" : "User",
+        //                 userName: userName,
+        //                 permissions: isAdmin ? ["create", "read", "update", "delete"] : ["read"]
+        //             });
                     
-                    console.log("Using fallback user role:", isAdmin ? "Admin" : "User", "for user:", userName);
-                    return Promise.resolve(isAdmin);
-                });
-        },
+        //             console.log("Using fallback user role:", isAdmin ? "Admin" : "User", "for user:", userName);
+        //             return Promise.resolve(isAdmin);
+        //         });
+        // },
 
         _fetchUserFromCAP: function() {
             // Try to get user info from CAP service
@@ -185,12 +185,27 @@ sap.ui.define([
                 .then(function(data) {
                     console.log("Product data loaded successfully:", data);
                     
-                    // Set the data to the model
-                    oModel.setData({
-                        Product: data.value || []
-                    });
+                    // Handle nested structure
+                    var products = data.value[0]?.value || [];
+                    var userRole = data.value[0]?.userRole || "User";
                     
-                    console.log("Product model updated with", data.value ? data.value.length : 0, "products");
+                    // Set the product data
+                    oModel.setData({
+                        Product: products
+                    });
+
+                    // Update user model with role from backend
+                    var oUserModel = that.getModel("user");
+                    if (oUserModel) {
+                        oUserModel.setData({
+                            isAdmin: userRole === "Admin",
+                            role: userRole,
+                            userName: userRole === "Admin" ? "alice" : "bob",
+                            permissions: userRole === "Admin" ? ["create", "read", "update", "delete"] : ["read"]
+                        });
+                    }
+                    
+                    console.log("Product model updated with", products.length, "products");
                 })
                 .catch(function(error) {
                     console.error("Error loading product data:", error);
