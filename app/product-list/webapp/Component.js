@@ -9,7 +9,6 @@ sap.ui.define([
         init: function() {
             // Call parent init
             UIComponent.prototype.init.apply(this, arguments);
-            console.log("Component initialized");
             
             // Set up the data model
             this.setupDataModel();
@@ -120,42 +119,42 @@ sap.ui.define([
         //         });
         // },
 
-        _fetchUserFromCAP: function() {
-            // Try to get user info from CAP service
-            return fetch("/user-info")
-                .then(function(response) {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    throw new Error("User info not available");
-                })
-                .catch(function(error) {
-                    // Fallback for testing - simulate CAP user based on URL parameter
-                    var urlParams = new URLSearchParams(window.location.search);
-                    var user = urlParams.get('user');
+        // _fetchUserFromCAP: function() {
+        //     // Try to get user info from CAP service
+        //     return fetch("/user-info")
+        //         .then(function(response) {
+        //             if (response.ok) {
+        //                 return response.json();
+        //             }
+        //             throw new Error("User info not available");
+        //         })
+        //         .catch(function(error) {
+        //             // Fallback for testing - simulate CAP user based on URL parameter
+        //             var urlParams = new URLSearchParams(window.location.search);
+        //             var user = urlParams.get('user');
                     
-                    if (user === 'alice') {
-                        return Promise.resolve({ 
-                            user: 'alice', 
-                            roles: ['Admin'] 
-                        });
-                    } else if (user === 'bob') {
-                        return Promise.resolve({ 
-                            user: 'bob', 
-                            roles: ['User'] 
-                        });
-                    }
+        //             if (user === 'alice') {
+        //                 return Promise.resolve({ 
+        //                     user: 'alice', 
+        //                     roles: ['Admin'] 
+        //                 });
+        //             } else if (user === 'bob') {
+        //                 return Promise.resolve({ 
+        //                     user: 'bob', 
+        //                     roles: ['User'] 
+        //                 });
+        //             }
                     
-                    // Default behavior for testing
-                    var defaultUser = window.location.hostname === 'localhost' ? 'alice' : 'bob';
-                    var defaultRoles = defaultUser === 'alice' ? ['Admin'] : ['User'];
+        //             // Default behavior for testing
+        //             var defaultUser = window.location.hostname === 'localhost' ? 'alice' : 'bob';
+        //             var defaultRoles = defaultUser === 'alice' ? ['Admin'] : ['User'];
                     
-                    return Promise.resolve({ 
-                        user: defaultUser, 
-                        roles: defaultRoles 
-                    });
-                });
-        },
+        //             return Promise.resolve({ 
+        //                 user: defaultUser, 
+        //                 roles: defaultRoles 
+        //             });
+        //         });
+        // },
 
         loadData: function() {
             // Load products and notifications in parallel
@@ -163,7 +162,6 @@ sap.ui.define([
                 this.loadProductData(),
                 this.loadNotificationData()
             ]).then(function(results) {
-                console.log("All data loaded successfully");
             }).catch(function(error) {
                 console.error("Error loading data:", error);
             });
@@ -173,7 +171,6 @@ sap.ui.define([
             var oModel = this.getModel();
             var that = this;
             
-            console.log("Loading product data from CAP service...");
             
             return fetch("/odata/v4/inventory/Product")
                 .then(function(response) {
@@ -183,7 +180,6 @@ sap.ui.define([
                     return response.json();
                 })
                 .then(function(data) {
-                    console.log("Product data loaded successfully:", data);
                     
                     // Handle nested structure
                     var products = data.value[0]?.value || [];
@@ -204,8 +200,7 @@ sap.ui.define([
                             permissions: userRole === "Admin" ? ["create", "read", "update", "delete"] : ["read"]
                         });
                     }
-                    
-                    console.log("Product model updated with", products.length, "products");
+
                 })
                 .catch(function(error) {
                     console.error("Error loading product data:", error);
@@ -225,7 +220,6 @@ sap.ui.define([
             var oNotificationModel = this.getModel("notifications");
             var that = this;
             
-            console.log("Loading notification data from CAP service...");
             
             return fetch("/odata/v4/inventory/Notification")
                 .then(function(response) {
@@ -235,7 +229,6 @@ sap.ui.define([
                     return response.json();
                 })
                 .then(function(data) {
-                    console.log("Notification data loaded successfully:", data);
                     
                     // Set the data to the notification model
                     var notifications = data.value || [];
@@ -250,7 +243,6 @@ sap.ui.define([
                         value: notifications
                     });
                     
-                    console.log("Notification model updated with", notifications.length, "notifications");
                 })
                 .catch(function(error) {
                     console.error("Error loading notification data:", error);
