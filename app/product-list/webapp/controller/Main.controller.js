@@ -661,6 +661,59 @@ sap.ui.define([
                 var iMonths = Math.floor(iDaysDiff / 30);
                 return iMonths + (iMonths === 1 ? " month ago" : " months ago");
             }
+        },
+
+        onCreateOrder: function() {
+            if (!this._oOrderDialog) {
+                this._oOrderDialog = sap.ui.xmlfragment(
+                    "productlist.view.OrderDialog",
+                    this
+                );
+                this.getView().addDependent(this._oOrderDialog);
+            }
+            
+            // Initialize order model with default values
+            var oOrderModel = new JSONModel({
+                customerName: "",
+                ordeID: new Date().getTime().toString(),  // Generate a unique ID
+                orderAmount: 0,
+                expectedDeliveryDate: new Date()  // Default to today
+            });
+            
+            this._oOrderDialog.setModel(oOrderModel, "order");
+            this._oOrderDialog.open();
+        },
+
+        onSubmitOrder: function() {
+            var oOrderModel = this._oOrderDialog.getModel("order");
+            var oOrderData = oOrderModel.getData();
+            
+            // Basic validation
+            if (!oOrderData.customerName || !oOrderData.ordeID || !oOrderData.orderAmount) {
+                MessageBox.error("Please fill in all required fields");
+                return;
+            }
+            
+            // Format the payload according to the API requirements
+            var oPayload = {
+                definitionId: "us10.a190dfa2trial.saleseordermanagementapiversion.salesOrderHandlingProcess",
+                context: {
+                    customerName: oOrderData.customerName,
+                    ordeID: oOrderData.ordeID,
+                    orderAmount: parseFloat(oOrderData.orderAmount),
+                    expectedDeliveryDate: oOrderData.expectedDeliveryDate
+                }
+            };
+            
+            // TODO: Add API call here once authentication details are provided
+            MessageBox.success("Order created successfully! Integration pending.");
+            this._oOrderDialog.close();
+        },
+
+        onCancelOrder: function() {
+            if (this._oOrderDialog) {
+                this._oOrderDialog.close();
+            }
         }
     });
 });

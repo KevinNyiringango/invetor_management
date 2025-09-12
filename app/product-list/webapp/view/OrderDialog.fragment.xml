@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog
+        title="Create New Order"
+        class="sapUiPopupWithPadding">
+        <f:SimpleForm
+            editable="true"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="4"
+            labelSpanL="4"
+            labelSpanM="4"
+            labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="0"
+            emptySpanL="0"
+            emptySpanM="0"
+            emptySpanS="0"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="false">
+            <f:content>
+                <Label text="Customer Name" required="true" />
+                <Input
+                    value="{order>/customerName}"
+                    required="true"
+                    placeholder="Enter customer name" />
+                
+                <Label text="Order ID" required="true" />
+                <Input
+                    value="{order>/ordeID}"
+                    required="true"
+                    enabled="false" />
+                
+                <Label text="Order Amount" required="true" />
+                <Input
+                    value="{order>/orderAmount}"
+                    type="Number"
+                    required="true"
+                    placeholder="Enter order amount" />
+                
+                <Label text="Expected Delivery Date" required="true" />
+                <DatePicker
+                    value="{order>/expectedDeliveryDate}"
+                    required="true"
+                    displayFormat="yyyy-MM-dd"
+                    valueFormat="yyyy-MM-dd"
+                    placeholder="Select delivery date" />
+            </f:content>
+        </f:SimpleForm>
+        <buttons>
+            <Button
+                text="Submit Order"
+                type="Emphasized"
+                press=".onSubmitOrder" />
+            <Button
+                text="Cancel"
+                press=".onCancelOrder" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

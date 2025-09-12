@@ -14,6 +14,16 @@
     >
         <content>
             <HBox justifyContent="End" alignItems="Center" class="sapUiSmallMarginBottom">
+                <!-- User Create Order Button -->
+                <Button
+                    id="createOrderButton"
+                    text="Create Order"
+                    icon="sap-icon://cart"
+                    type="Emphasized"
+                    press=".onCreateOrder"
+                    visible="{= !${user>/isAdmin}}"
+                    class="sapUiTinyMarginEnd"
+                />
                 <!-- Admin Add Product Button -->
                 <Button
                     id="addProductButton"
