@@ -38,8 +38,7 @@
             </HBox>
             <VBox
                 fitContainer="true"
-                height="calc(100vh - 8rem)"
-                class="sapUiNoContentPadding"
+                height="100%"
             >
                 <!-- Smart Table with proper scrolling -->
                 <smartTable:SmartTable
@@ -85,10 +84,11 @@
                         sticky="ColumnHeaders"
                         growing="true"
                         growingScrollToLoad="true"
-                        growingThreshold="50"
-                        width="100%"
+                        growingThreshold="25"
+                        width="auto"
                         fixedLayout="false"
                         backgroundDesign="Solid"
+                        mode="None"
                     >
                         <columns>
                             <Column

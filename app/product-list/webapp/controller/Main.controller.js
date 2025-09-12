@@ -385,7 +385,7 @@ sap.ui.define([
 
         _openProductDetail: function (oProduct) {
             // Implement product detail view
-            MessageToast.show("Opening details for: " + oProduct.Name);
+            return;
         },
 
         _openAddProductDialog: function() {
