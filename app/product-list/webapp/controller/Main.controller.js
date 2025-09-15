@@ -675,7 +675,7 @@ sap.ui.define([
             // Initialize order model with default values
             var oOrderModel = new JSONModel({
                 customerName: "",
-                ordeID: new Date().getTime().toString(),  // Generate a unique ID
+                ordeID: "",
                 orderAmount: 0,
                 expectedDeliveryDate: new Date()  // Default to today
             });

@@ -33,7 +33,7 @@
                 <Input
                     value="{order>/ordeID}"
                     required="true"
-                    enabled="false" />
+                    placeholder="Enter a numeric order ID" />
                 
                 <Label text="Order Amount" required="true" />
                 <Input

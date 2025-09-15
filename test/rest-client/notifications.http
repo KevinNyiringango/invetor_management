@@ -1,6 +1,6 @@
 ### Variables
 @host = http://localhost:4004
-@notificationService = {{host}}/odata/v4/notification
+@notificationService = {{host}}/odata/v4/inventory
 @contentType = application/json
 
 ### Get all notifications
@@ -8,16 +8,16 @@ GET {{notificationService}}/Notification
 Authorization: Basic alice:alice
 
 ### Mark a specific notification as read
-POST {{notificationService}}/markAsRead
+POST {{notificationService}}/Notification/markAsRead
 Authorization: Basic alice:alice
 Content-Type: {{contentType}}
 
 {
-    "notificationId": "your-notification-id-here"
+    "notificationId": "02c98ed2-f85c-472f-89f0-dd4fa8ca7485"
 }
 
 ### Mark all notifications as read
-POST {{notificationService}}/markAllAsRead
+POST {{notificationService}}/Notification/markAllAsRead
 Authorization: Basic alice:alice
 Content-Type: {{contentType}}
 
