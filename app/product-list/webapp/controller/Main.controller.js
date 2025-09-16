@@ -685,6 +685,7 @@ sap.ui.define([
         },
 
         onSubmitOrder: function() {
+            var that = this;
             var oOrderModel = this._oOrderDialog.getModel("order");
             var oOrderData = oOrderModel.getData();
             
@@ -694,20 +695,31 @@ sap.ui.define([
                 return;
             }
             
-            // Format the payload according to the API requirements
-            var oPayload = {
-                definitionId: "us10.a190dfa2trial.saleseordermanagementapiversion.salesOrderHandlingProcess",
-                context: {
-                    customerName: oOrderData.customerName,
-                    ordeID: oOrderData.ordeID,
-                    orderAmount: parseFloat(oOrderData.orderAmount),
-                    expectedDeliveryDate: oOrderData.expectedDeliveryDate
+            // Call workflow service
+            fetch("/workflow/createSalesOrder", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    company_id: oOrderData.customerName,
+                    product_id: oOrderData.ordeID,
+                    quantity: parseInt(oOrderData.orderAmount)
+                })
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error("Order creation failed");
                 }
-            };
-            
-            // TODO: Add API call here once authentication details are provided
-            MessageBox.success("Order created successfully! Integration pending.");
-            this._oOrderDialog.close();
+                return response.json();
+            })
+            .then(function(data) {
+                MessageBox.success("Order created successfully! Workflow ID: " + data.id);
+                that._oOrderDialog.close();
+            })
+            .catch(function(error) {
+                MessageBox.error("Error creating order: " + error.message);
+            });
         },
 
         onCancelOrder: function() {

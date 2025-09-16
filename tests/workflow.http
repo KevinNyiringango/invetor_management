@@ -1,0 +1,27 @@
+### Get XSUAA Token
+POST https://a190dfa2trial.authentication.us10.hana.ondemand.com/oauth/token
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic <base64-encoded-credentials>
+
+grant_type=client_credentials
+
+### Create Sales Order Workflow
+POST http://localhost:4004/workflow/createSalesOrder
+Content-Type: application/json
+
+{
+    "company_id": "004",
+    "product_id": "0007",
+    "quantity": 50
+}
+
+### Create Sales Order Workflow (Production)
+POST https://your-app-url/workflow/createSalesOrder
+Content-Type: application/json
+Authorization: Bearer <your-token>
+
+{
+    "company_id": "004",
+    "product_id": "0007",
+    "quantity": 50
+}
