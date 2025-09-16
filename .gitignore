@@ -5,6 +5,8 @@ _out
 connection.properties
 default-*.json
 .cdsrc-private.json
+.eslintcache
+.env
 gen/
 node_modules/
 target/
