@@ -4,7 +4,7 @@
     xmlns:core="sap.ui.core"
     xmlns:f="sap.ui.layout.form">
     <Dialog
-        title="Create New Order"
+        title="Create Sales Order"
         class="sapUiPopupWithPadding">
         <f:SimpleForm
             editable="true"
@@ -12,43 +12,32 @@
             labelSpanXL="4"
             labelSpanL="4"
             labelSpanM="4"
-            labelSpanS="12"
-            adjustLabelSpan="false"
-            emptySpanXL="0"
-            emptySpanL="0"
-            emptySpanM="0"
-            emptySpanS="0"
-            columnsXL="2"
-            columnsL="2"
-            columnsM="2"
-            singleContainerFullSize="false">
+            labelSpanS="12">
             <f:content>
-                <Label text="Customer Name" required="true" />
+                <Label text="Company ID" required="true" />
                 <Input
-                    value="{order>/customerName}"
+                    value="{order>/company_id}"
                     required="true"
-                    placeholder="Enter customer name" />
+                    placeholder="Enter company ID (e.g. 004)"
+                    maxLength="3"
+                    type="Text" />
                 
-                <Label text="Order ID" required="true" />
+                <Label text="Product ID" required="true" />
                 <Input
-                    value="{order>/ordeID}"
+                    value="{order>/product_id}"
                     required="true"
-                    placeholder="Enter a numeric order ID" />
+                    placeholder="Enter product ID (e.g. 0007)"
+                    maxLength="4"
+                    type="Text" />
                 
-                <Label text="Order Amount" required="true" />
-                <Input
-                    value="{order>/orderAmount}"
-                    type="Number"
+                <Label text="Quantity" required="true" />
+                <StepInput
+                    value="{order>/quantity}"
+                    min="1"
+                    max="999"
+                    step="1"
                     required="true"
-                    placeholder="Enter order amount" />
-                
-                <Label text="Expected Delivery Date" required="true" />
-                <DatePicker
-                    value="{order>/expectedDeliveryDate}"
-                    required="true"
-                    displayFormat="yyyy-MM-dd"
-                    valueFormat="yyyy-MM-dd"
-                    placeholder="Select delivery date" />
+                    validationMode="LiveChange" />
             </f:content>
         </f:SimpleForm>
         <buttons>

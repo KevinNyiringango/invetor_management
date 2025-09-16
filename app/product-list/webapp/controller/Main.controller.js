@@ -672,12 +672,11 @@ sap.ui.define([
                 this.getView().addDependent(this._oOrderDialog);
             }
             
-            // Initialize order model with default values
+            // Initialize order model with workflow payload structure
             var oOrderModel = new JSONModel({
-                customerName: "",
-                ordeID: "",
-                orderAmount: 0,
-                expectedDeliveryDate: new Date()  // Default to today
+                company_id: "",
+                product_id: "",
+                quantity: 1
             });
             
             this._oOrderDialog.setModel(oOrderModel, "order");
@@ -690,32 +689,41 @@ sap.ui.define([
             var oOrderData = oOrderModel.getData();
             
             // Basic validation
-            if (!oOrderData.customerName || !oOrderData.ordeID || !oOrderData.orderAmount) {
+            if (!oOrderData.company_id || !oOrderData.product_id || !oOrderData.quantity) {
                 MessageBox.error("Please fill in all required fields");
                 return;
             }
             
-            // Call workflow service
+            // Format payload as expected by CAP service
+            var oPayload = {
+                company_id: oOrderData.company_id,
+                product_id: oOrderData.product_id,
+                quantity: parseInt(oOrderData.quantity)
+            };
+            
+            // Send to CAP workflow service
             fetch("/workflow/createSalesOrder", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    company_id: oOrderData.customerName,
-                    product_id: oOrderData.ordeID,
-                    quantity: parseInt(oOrderData.orderAmount)
-                })
+                body: JSON.stringify(oPayload)
             })
             .then(function(response) {
                 if (!response.ok) {
-                    throw new Error("Order creation failed");
+                    return response.json().then(function(error) {
+                        throw new Error(error.message || "Failed to create sales order");
+                    });
                 }
                 return response.json();
             })
             .then(function(data) {
-                MessageBox.success("Order created successfully! Workflow ID: " + data.id);
-                that._oOrderDialog.close();
+                MessageBox.success("Sales order created successfully! Order ID: " + data.id, {
+                    title: "Success",
+                    onClose: function() {
+                        that._oOrderDialog.close();
+                    }
+                });
             })
             .catch(function(error) {
                 MessageBox.error("Error creating order: " + error.message);
