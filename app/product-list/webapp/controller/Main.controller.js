@@ -28,6 +28,37 @@ sap.ui.define([
             } else {
                 this.getView().attachModelContextChange(this._onModelContextChange.bind(this));
             }
+
+            // Initialize wizard step
+            var oWizard = this.byId("mainWizard");
+            if (oWizard) {
+                this._updateWizardStep();
+            }
+        },
+
+        _updateWizardStep: function() {
+            var oWizard = this.byId("mainWizard");
+            var oPage = this.byId("page");
+            
+            if (!oWizard || !oPage) {
+                return;
+            }
+            
+            var oCurrentStep = oWizard.getCurrentStep();
+            if (!oCurrentStep) {
+                return;
+            }
+            
+            var sStepId = oCurrentStep.getId();
+            var sTitle = "Product Management";
+            
+            if (sStepId.includes("productListStep")) {
+                sTitle = "Product Inventory";
+            } else if (sStepId.includes("orderFormStep")) {
+                sTitle = "Create Order";
+            }
+            
+            oPage.setTitle(sTitle);
         },
 
         _initializeUserRole: function() {
@@ -117,6 +148,9 @@ sap.ui.define([
             if (this._pollInterval) {
                 clearInterval(this._pollInterval);
             }
+
+            // Clean up iframe listener
+            this._cleanupIframeListener();
         },
 
         _initializeSmartTable: function () {
@@ -734,6 +768,75 @@ sap.ui.define([
             if (this._oOrderDialog) {
                 this._oOrderDialog.close();
             }
-        }
+        },
+
+        // ========================================
+        // WIZARD NAVIGATION METHODS
+        // ========================================
+        onOrderByForm: function() {
+            var oUserModel = this.getView().getModel("user");
+            
+            if (oUserModel.getProperty("/isAdmin")) {
+                MessageToast.show("Order by Form is only available for regular users");
+                return;
+            }
+
+            // Define form URL
+            var sFormUrl = "https://a190dfa2trial.us10.process-automation.build.cloud.sap/comsapspaprocessautomation.comsapspabpiprocessformtrigger/index.html"
+                + "?packageId=ca173a0a-26ca-4c60-8cac-c223bf6fbe6c"
+                + "&packageVersionId=3a3369b3-bfbc-4fec-aaa9-f70385dab933"
+                + "&formId=af95f72d-3189-4ce1-8be0-136d9de7cf48"
+                + "&processId=us10.a190dfa2trial.saleseordermanagementproject.salesOrderHandlingProcess"
+                + "&skipStartEventWrapping=true";
+
+            // Open form in a popup window
+            var width = Math.min(1024, window.screen.width * 0.8);
+            var height = Math.min(768, window.screen.height * 0.8);
+            var left = (window.screen.width - width) / 2;
+            var top = (window.screen.height - height) / 2;
+
+            var features = [
+                "width=" + width,
+                "height=" + height,
+                "left=" + left,
+                "top=" + top,
+                "resizable=yes",
+                "scrollbars=yes",
+                "status=no",
+                "location=no",
+                "menubar=no",
+                "toolbar=no"
+            ].join(",");
+
+            var formWindow = window.open(sFormUrl, "SPAOrderForm", features);
+            
+            // Add message listener for form submission
+            window.addEventListener("message", function(event) {
+                // Verify the origin
+                if (event.origin === "https://a190dfa2trial.us10.process-automation.build.cloud.sap") {
+                    if (event.data.type === "FORM_SUBMITTED") {
+                        formWindow.close();
+                        MessageBox.success("Order submitted successfully!", {
+                            onClose: function() {
+                                this.onBackToProducts();
+                            }.bind(this)
+                        });
+                    }
+                }
+            }.bind(this));
+
+            // Check if popup was blocked
+            if (!formWindow || formWindow.closed || typeof formWindow.closed === 'undefined') {
+                MessageBox.error("Popup was blocked! Please allow popups for this site.");
+            }
+        },
+
+        // Remove the old SPA form dialog methods
+        onSubmitSPAForm: null,
+        onCloseSPAForm: null,
+
+        // Continue with existing methods...
+        // ...existing code...
     });
+    
 });

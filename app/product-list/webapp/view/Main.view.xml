@@ -8,279 +8,330 @@
     height="100%"
 >
     <Page
-        title="Product Inventory"
+        title="Product Management"
         enableScrolling="false"
         class="sapUiResponsiveContentPadding"
     >
         <content>
-            <HBox justifyContent="End" alignItems="Center" class="sapUiSmallMarginBottom">
-                <!-- User Create Order Button -->
-                <Button
-                    id="createOrderButton"
-                    text="Create Order"
-                    icon="sap-icon://cart"
-                    type="Emphasized"
-                    press=".onCreateOrder"
-                    visible="{= !${user>/isAdmin}}"
-                    class="sapUiTinyMarginEnd"
-                />
-                <!-- Admin Add Product Button -->
-                <Button
-                    id="addProductButton"
-                    text="Add Product"
-                    icon="sap-icon://add"
-                    type="Emphasized"
-                    press="onAddProduct"
-                    visible="{user>/isAdmin}"
-                    class="sapUiTinyMarginEnd"
-                />
-                
-                <Button
-                    id="notificationButton"
-                    icon="sap-icon://bell"
-                    type="Emphasized"
-                    press="onNotificationPress"
-                    tooltip="Notifications"
-                    text=""
-                    class="sapUiTinyMarginEnd"
-                />
-
-            </HBox>
-            <VBox
-                fitContainer="true"
+            <!-- Main Wizard Control -->
+            <Wizard
+                id="mainWizard"
+                complete="onWizardComplete"
+                enableBranching="false"
+                showNextButton="true"
+                finishButtonText="Complete Order"
+                class="sapUiNoMargin"
                 height="100%"
             >
-                <!-- Smart Table with proper scrolling -->
-                <smartTable:SmartTable
-                    id="smartTable"
-                    tableType="ResponsiveTable"
-                    useExportToExcel="true"
-                    useVariantManagement="false"
-                    useTablePersonalisation="true"
-                    header=""
-                    showRowCount="false"
-                    enableAutoBinding="false"
-                    class="sapUiNoMargin sapUiNoContentPadding"
-                    width="100%"
+                <!-- Step 1: Product List -->
+                <WizardStep
+                    id="productListStep"
+                    title="Product Inventory"
+                    validated="true"
+                    complete="onProductStepComplete"
                 >
-                    <!-- Custom Toolbar -->
-                    <smartTable:customToolbar>
-                        <Toolbar height="3rem">
-                            <Title
-                                id="tableTitle"
-                                text="Products"
-                                level="H2"
-                                class="sapUiMediumMarginBegin"
-                            />
-                            <ToolbarSpacer />
-                            <!-- Role and user indicator -->
-                            <Label
-                                text="User: {user>/userName} ({user>/role})"
+                    <VBox height="100%" fitContainer="true">
+                        <!-- Action Buttons Row -->
+                        <HBox justifyContent="End" alignItems="Center" class="sapUiSmallMarginBottom">
+                            <!-- User Create Order Button -->
+                            <Button
+                                id="createOrderButton"
+                                text="Create Order"
+                                icon="sap-icon://cart"
+                                type="Emphasized"
+                                press=".onCreateOrder"
+                                visible="{= !${user>/isAdmin}}"
                                 class="sapUiTinyMarginEnd"
-                                design="Bold"
                             />
-                        </Toolbar>
-                    </smartTable:customToolbar>
-
-                    <!-- Table Definition -->
-                    <Table
-                        id="productTable"
-                        items="{
-                            path: '/Product',
-                            sorter: {
-                                path: 'Name'
-                            }
-                        }"
-                        sticky="ColumnHeaders"
-                        growing="true"
-                        growingScrollToLoad="true"
-                        growingThreshold="25"
-                        width="auto"
-                        fixedLayout="false"
-                        backgroundDesign="Solid"
-                        mode="None"
-                    >
-                        <columns>
-                            <Column
-                                width="12rem"
-                                minScreenWidth="Tablet"
-                                demandPopin="true"
-                                popinDisplay="Inline"
-                                hAlign="Begin"
-                            >
-                                <Text text="Name" />
-                            </Column>
-
-                            <Column
-                                width="15rem"
-                                minScreenWidth="Desktop"
-                                demandPopin="true"
-                                popinDisplay="Block"
-                                hAlign="Begin"
-                            >
-                                <Text text="Description" />
-                            </Column>
-
-                            <Column
-                                width="10rem"
-                                minScreenWidth="Tablet"
-                                demandPopin="true"
-                                popinDisplay="Inline"
-                                hAlign="Center"
-                            >
-                                <Text text="Category" />
-                            </Column>
-
-                            <Column
-                                width="8rem"
-                                minScreenWidth="Tablet"
-                                demandPopin="false"
-                                hAlign="End"
-                            >
-                                <Text text="Unit Price" />
-                            </Column>
-
-                            <Column
-                                width="8rem"
-                                minScreenWidth="Phone"
-                                demandPopin="false"
-                                hAlign="Center"
-                            >
-                                <Text text="Quantity" />
-                            </Column>
-
-                            <Column
-                                width="10rem"
-                                minScreenWidth="Desktop"
-                                demandPopin="true"
-                                popinDisplay="Inline"
-                                hAlign="Center"
-                            >
-                                <Text text="Min Stock" />
-                            </Column>
-
-                            <Column
-                                width="10rem"
-                                minScreenWidth="Desktop"
-                                demandPopin="true"
-                                popinDisplay="Block"
-                                hAlign="Center"
-                            >
-                                <Text text="Last Updated" />
-                            </Column>
-
-                            <!-- Actions Column - Only visible for admins -->
-                            <Column
-                                width="8rem"
-                                minScreenWidth="Desktop"
-                                demandPopin="false"
-                                hAlign="Center"
+                            <!-- NEW: Order by Form Button - Only for Users -->
+                            <Button
+                                id="orderByFormButton"
+                                text="Order by Form"
+                                icon="sap-icon://form"
+                                type="Emphasized"
+                                press=".onOrderByForm"
+                                visible="{= !${user>/isAdmin}}"
+                                class="sapUiTinyMarginEnd"
+                            />
+                            <!-- Admin Add Product Button -->
+                            <Button
+                                id="addProductButton"
+                                text="Add Product"
+                                icon="sap-icon://add"
+                                type="Emphasized"
+                                press="onAddProduct"
                                 visible="{user>/isAdmin}"
+                                class="sapUiTinyMarginEnd"
+                            />
+                            
+                            <Button
+                                id="notificationButton"
+                                icon="sap-icon://bell"
+                                type="Emphasized"
+                                press="onNotificationPress"
+                                tooltip="Notifications"
+                                text=""
+                                class="sapUiTinyMarginEnd"
+                            />
+                        </HBox>
+
+                        <!-- Product Table -->
+                        <VBox fitContainer="true" height="100%">
+                            <smartTable:SmartTable
+                                id="smartTable"
+                                tableType="ResponsiveTable"
+                                useExportToExcel="true"
+                                useVariantManagement="false"
+                                useTablePersonalisation="true"
+                                header=""
+                                showRowCount="false"
+                                enableAutoBinding="false"
+                                class="sapUiNoMargin sapUiNoContentPadding"
+                                width="100%"
                             >
-                                <Text text="Actions" />
-                            </Column>
-                        </columns>
-
-                        <items>
-                            <ColumnListItem
-                                press="onItemPress"
-                                type="Active"
-                            >
-                                <cells>
-                                    <VBox>
-                                        <Text
-                                            text="{Name}"
-                                            maxLines="2"
-                                            class="sapUiTinyMarginBottom"
+                                <!-- Custom Toolbar -->
+                                <smartTable:customToolbar>
+                                    <Toolbar height="3rem">
+                                        <Title
+                                            id="tableTitle"
+                                            text="Products"
+                                            level="H2"
+                                            class="sapUiMediumMarginBegin"
                                         />
+                                        <ToolbarSpacer />
+                                        <!-- Role and user indicator -->
                                         <Label
-                                            text="ID: {ID}"
-                                            class="sapUiTinyText"
+                                            text="User: {user>/userName} ({user>/role})"
+                                            class="sapUiTinyMarginEnd"
+                                            design="Bold"
                                         />
-                                    </VBox>
+                                    </Toolbar>
+                                </smartTable:customToolbar>
 
-                                    <Text
-                                        text="{Description}"
-                                        maxLines="3"
-                                    />
+                                <!-- Table Definition -->
+                                <Table
+                                    id="productTable"
+                                    items="{
+                                        path: '/Product',
+                                        sorter: {
+                                            path: 'Name'
+                                        }
+                                    }"
+                                    sticky="ColumnHeaders"
+                                    growing="true"
+                                    growingScrollToLoad="true"
+                                    growingThreshold="25"
+                                    width="auto"
+                                    fixedLayout="false"
+                                    backgroundDesign="Solid"
+                                    mode="None"
+                                >
+                                    <columns>
+                                        <Column
+                                            width="12rem"
+                                            minScreenWidth="Tablet"
+                                            demandPopin="true"
+                                            popinDisplay="Inline"
+                                            hAlign="Begin"
+                                        >
+                                            <Text text="Name" />
+                                        </Column>
 
-                                    <ObjectStatus
-                                        text="{Category}"
-                                        state="Information"
-                                    />
+                                        <Column
+                                            width="15rem"
+                                            minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            popinDisplay="Block"
+                                            hAlign="Begin"
+                                        >
+                                            <Text text="Description" />
+                                        </Column>
 
-                                    <ObjectNumber
-                                        number="{UnitPrice}"
-                                        unit="RWF"
-                                        state="Success"
-                                    />
+                                        <Column
+                                            width="10rem"
+                                            minScreenWidth="Tablet"
+                                            demandPopin="true"
+                                            popinDisplay="Inline"
+                                            hAlign="Center"
+                                        >
+                                            <Text text="Category" />
+                                        </Column>
 
-                                    <VBox>
-                                        <ObjectNumber
-                                            number="{Quantity}"
-                                            state="{
-                                                parts: ['Quantity', 'MinimumStockLevel'],
-                                                formatter: '.formatStockState'
-                                            }"
-                                        />
-                                        <ProgressIndicator
-                                            percentValue="{
-                                                parts: ['Quantity', 'MinimumStockLevel'],
-                                                formatter: '.calculateStockPercentage'
-                                            }"
-                                            state="{
-                                                parts: ['Quantity', 'MinimumStockLevel'],
-                                                formatter: '.formatStockState'
-                                            }"
-                                            showValue="false"
-                                            width="100%"
-                                            height="0.25rem"
-                                            class="sapUiTinyMarginTop"
-                                        />
-                                    </VBox>
+                                        <Column
+                                            width="8rem"
+                                            minScreenWidth="Tablet"
+                                            demandPopin="false"
+                                            hAlign="End"
+                                        >
+                                            <Text text="Unit Price" />
+                                        </Column>
 
-                                    <ObjectNumber
-                                        number="{MinimumStockLevel}"
-                                        state="None"
-                                    />
+                                        <Column
+                                            width="8rem"
+                                            minScreenWidth="Phone"
+                                            demandPopin="false"
+                                            hAlign="Center"
+                                        >
+                                            <Text text="Quantity" />
+                                        </Column>
 
-                                    <VBox>
-                                        <Text text="{LastUpdated}" />
-                                        <Label
-                                            text="{
-                                            path: 'LastUpdated',
-                                            formatter: '.formatTimeAgo'
-                                        }"
-                                            class="sapUiTinyText"
-                                        />
-                                    </VBox>
+                                        <Column
+                                            width="10rem"
+                                            minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            popinDisplay="Inline"
+                                            hAlign="Center"
+                                        >
+                                            <Text text="Min Stock" />
+                                        </Column>
 
-                                    <!-- Action Buttons - Only visible for admins -->
-                                    <VBox>
-                                        <HBox visible="{= ${user>/isAdmin} ? true : false}">
-                                            <Button
-                                                icon="sap-icon://edit"
-                                                type="Transparent"
-                                                press=".onEditProduct"
-                                                tooltip="Edit Product"
-                                                class="sapUiTinyMarginEnd"
-                                                visible="{user>/isAdmin}"
-                                            />
-                                            <Button
-                                                icon="sap-icon://delete"
-                                                type="Reject"
-                                                press="onDeleteProduct"
-                                                tooltip="Delete Product"
-                                                visible="{user>/isAdmin}"
-                                            />
-                                        </HBox>
-                                    </VBox>
-                                </cells>
-                            </ColumnListItem>
-                        </items>
-                    </Table>
-                </smartTable:SmartTable>
-            </VBox>
+                                        <Column
+                                            width="10rem"
+                                            minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                            popinDisplay="Block"
+                                            hAlign="Center"
+                                        >
+                                            <Text text="Last Updated" />
+                                        </Column>
+
+                                        <!-- Actions Column - Only visible for admins -->
+                                        <Column
+                                            width="8rem"
+                                            minScreenWidth="Desktop"
+                                            demandPopin="false"
+                                            hAlign="Center"
+                                            visible="{user>/isAdmin}"
+                                        >
+                                            <Text text="Actions" />
+                                        </Column>
+                                    </columns>
+
+                                    <items>
+                                        <ColumnListItem
+                                            press="onItemPress"
+                                            type="Active"
+                                        >
+                                            <cells>
+                                                <VBox>
+                                                    <Text
+                                                        text="{Name}"
+                                                        maxLines="2"
+                                                        class="sapUiTinyMarginBottom"
+                                                    />
+                                                    <Label
+                                                        text="ID: {ID}"
+                                                        class="sapUiTinyText"
+                                                    />
+                                                </VBox>
+
+                                                <Text
+                                                    text="{Description}"
+                                                    maxLines="3"
+                                                />
+
+                                                <ObjectStatus
+                                                    text="{Category}"
+                                                    state="Information"
+                                                />
+
+                                                <ObjectNumber
+                                                    number="{UnitPrice}"
+                                                    unit="RWF"
+                                                    state="Success"
+                                                />
+
+                                                <VBox>
+                                                    <ObjectNumber
+                                                        number="{Quantity}"
+                                                        state="{
+                                                            parts: ['Quantity', 'MinimumStockLevel'],
+                                                            formatter: '.formatStockState'
+                                                        }"
+                                                    />
+                                                    <ProgressIndicator
+                                                        percentValue="{
+                                                            parts: ['Quantity', 'MinimumStockLevel'],
+                                                            formatter: '.calculateStockPercentage'
+                                                        }"
+                                                        state="{
+                                                            parts: ['Quantity', 'MinimumStockLevel'],
+                                                            formatter: '.formatStockState'
+                                                        }"
+                                                        showValue="false"
+                                                        width="100%"
+                                                        height="0.25rem"
+                                                        class="sapUiTinyMarginTop"
+                                                    />
+                                                </VBox>
+
+                                                <ObjectNumber
+                                                    number="{MinimumStockLevel}"
+                                                    state="None"
+                                                />
+
+                                                <VBox>
+                                                    <Text text="{LastUpdated}" />
+                                                    <Label
+                                                        text="{
+                                                        path: 'LastUpdated',
+                                                        formatter: '.formatTimeAgo'
+                                                    }"
+                                                        class="sapUiTinyText"
+                                                    />
+                                                </VBox>
+
+                                                <!-- Action Buttons - Only visible for admins -->
+                                                <VBox>
+                                                    <HBox visible="{= ${user>/isAdmin} ? true : false}">
+                                                        <Button
+                                                            icon="sap-icon://edit"
+                                                            type="Transparent"
+                                                            press=".onEditProduct"
+                                                            tooltip="Edit Product"
+                                                            class="sapUiTinyMarginEnd"
+                                                            visible="{user>/isAdmin}"
+                                                        />
+                                                        <Button
+                                                            icon="sap-icon://delete"
+                                                            type="Reject"
+                                                            press="onDeleteProduct"
+                                                            tooltip="Delete Product"
+                                                            visible="{user>/isAdmin}"
+                                                        />
+                                                    </HBox>
+                                                </VBox>
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                            </smartTable:SmartTable>
+                        </VBox>
+                    </VBox>
+                </WizardStep>
+
+                <!-- Step 2: Order Form - Only visible for Users -->
+                <WizardStep
+                    id="orderFormStep"
+                    title="Order Form"
+                    validated="true"
+                    visible="{= !${user>/isAdmin}}"
+                    complete="onOrderFormStepComplete">
+                    <VBox height="100%" fitContainer="true" class="sapUiMediumMargin">
+                        <MessageStrip
+                            text="Click the button below to open the order form in a new window."
+                            type="Information"
+                            showIcon="true"
+                            class="sapUiMediumMarginBottom"/>
+                        <Button
+                            text="Open Order Form"
+                            icon="sap-icon://form"
+                            type="Emphasized"
+                            press=".onOrderByForm"
+                            class="sapUiMediumMarginBottom"/>
+                    </VBox>
+                </WizardStep>
+            </Wizard>
         </content>
     </Page>
 

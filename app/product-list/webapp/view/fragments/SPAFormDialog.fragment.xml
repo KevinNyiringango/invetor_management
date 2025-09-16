@@ -1,0 +1,61 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog
+        id="spaFormDialog"
+        title="Create Sales Order"
+        class="sapUiResponsivePadding"
+        contentWidth="60%"
+        contentHeight="80%"
+        resizable="true"
+        draggable="true">
+        <content>
+            <f:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout">
+                <f:content>
+                    <Label text="Company ID" required="true"/>
+                    <Input 
+                        value="{spaForm>/companyId}"
+                        placeholder="Enter company ID"
+                        maxLength="10"
+                        required="true"/>
+
+                    <Label text="Product" required="true"/>
+                    <ComboBox
+                        selectedKey="{spaForm>/productId}"
+                        items="{/Product}"
+                        required="true">
+                        <core:Item key="{ID}" text="{Name} ({ID})"/>
+                    </ComboBox>
+
+                    <Label text="Quantity" required="true"/>
+                    <StepInput
+                        value="{spaForm>/quantity}"
+                        min="1"
+                        step="1"/>
+
+                    <Label text="Delivery Address"/>
+                    <TextArea
+                        value="{spaForm>/deliveryAddress}"
+                        rows="3"/>
+
+                    <Label text="Additional Notes"/>
+                    <TextArea
+                        value="{spaForm>/notes}"
+                        rows="3"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <buttons>
+            <Button
+                text="Submit Order"
+                type="Emphasized"
+                press=".onSubmitSPAForm"/>
+            <Button
+                text="Cancel"
+                press=".onCloseSPAForm"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>
